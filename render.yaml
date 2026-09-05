@@ -1,0 +1,23 @@
+# Render blueprint. In the dashboard: New > Blueprint, pick this repo, Apply.
+#
+# The free plan has no persistent disk, so the SQLite file is wiped on every
+# restart and redeploy. Citizen reports, help requests and officer decisions do
+# not survive. That is fine for a demo and wrong for a district: for anything
+# real, attach a disk at /var/pravaah and point PRAVAAH_DB into it.
+services:
+  - type: web
+    name: pravaah
+    runtime: python
+    plan: free
+    region: singapore          # nearest to India of the free regions
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.14"
+      # The secret that scrambles phone numbers. generateValue makes Render
+      # mint one and keep it across restarts, which a regenerated file cannot
+      # do on an ephemeral disk. Never print it, never commit it.
+      - key: PRAVAAH_CONTACT_KEY
+        generateValue: true

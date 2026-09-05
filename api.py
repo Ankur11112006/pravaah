@@ -565,14 +565,18 @@ def forecast(ev: str):
     """
     e = _event(ev)
     hit = _cache.get(("fc", ev))
-    if hit and time.time() - hit[0] < 1800:
+    # A failure must not be cached as long as an answer. GloFAS being briefly
+    # unreachable used to blank the Act panel for the full half hour, long after
+    # the network came back, because the error was stored under the success TTL.
+    if hit and time.time() - hit[0] < (120 if hit[1].get("probability") is None
+                                       else 1800):
         return hit[1]
     try:
-        from pravaah import hazard
+        from pravaah import glofas
         import numpy as np
-        g = hazard.main_stem_gauge(*e.gauge)
+        g = glofas.main_stem_gauge(*e.gauge)
         rp = {int(k): float(v) for k, v in g["rp"].items()}
-        days, ens = hazard.ensemble(g["lat"], g["lon"], days=15)
+        days, ens = glofas.ensemble(g["lat"], g["lon"], days=15)
         rows = [(str(d), float((ens[i] >= rp[PLANNING_RP]).mean()))
                 for i, d in enumerate(days)]
         worst = max(rows, key=lambda r: r[1])

@@ -1,0 +1,12 @@
+# What the BACKEND needs. Not the pipeline.
+#
+# api.py reads JSON the pipeline already wrote, so nothing here opens a raster.
+# rasterio, scipy, geopandas, networkx and zarr belong to the build_*.py scripts
+# and are deliberately absent: they are the heaviest wheels in the project and
+# the server never uses them. pravaah/glofas.py exists to keep it that way.
+#
+# Pinned to the versions this was actually run against, not the latest.
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32
+numpy==2.5.2

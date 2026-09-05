@@ -35,3 +35,7 @@ out/alerts_cache.json
 
 # depth rasters, only ever read by build_map_data.py, whose output is committed
 out/depth/
+
+# the three event gauges and their return periods, 1.8 KB. Committed so the
+# backend never needs zarr and fsspec to answer a forecast.
+!data/_gauge_cache.json

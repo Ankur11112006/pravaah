@@ -30,6 +30,13 @@ def _contact_key():
     they cannot, unless they also steal this file, and this file is the one
     thing that must never be copied along with the database.
     """
+    # On a hosted box there is no persistent disk to keep a file on, and a key
+    # regenerated on every restart stops recognising the repeat callers it
+    # exists to recognise. An env var survives the restart; a file is still the
+    # right answer on a district laptop, so the file wins when it is there.
+    env = os.environ.get("PRAVAAH_CONTACT_KEY")
+    if env:
+        return env.strip().encode()
     if os.path.exists(CONTACT_KEY):
         return open(CONTACT_KEY, "rb").read().strip()
     os.makedirs(os.path.dirname(CONTACT_KEY) or ".", exist_ok=True)
