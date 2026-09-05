@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRAVAAH</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --paper:#F4F6F8;      /* cool near-white, biased to the gauge blue */
+    --card:#FFFFFF;
+    --sunk:#EAEEF2;
+    --ink:#101A24;
+    --ink-2:#3D4C5A;
+    --dim:#6B7C8C;
+    --rule:#D6DEE6;
+    --gauge:#1F6FA8;      /* hydrographic blue, the one accent */
+    --gauge-soft:#E4EFF7;
+    --normal:#2E7D52;
+    --warn:#B07716;
+    --danger:#B23A2E;
+    --normal-bg:#E6F1EA; --warn-bg:#F7EFDE; --danger-bg:#F8E7E4;
+    --shadow:0 1px 2px #101a2410, 0 8px 24px #101a240c;
+  }
+  /* media outside, selector inside: CSS nesting is not needed here and the
+     plain form works in every renderer this page might land in */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0B1219; --card:#111B24; --sunk:#0E1720; --ink:#E7EDF2;
+      --ink-2:#B4C2CE; --dim:#7C8D9C; --rule:#22303C;
+      --gauge:#69B4E4; --gauge-soft:#12293A;
+      --normal:#6BC495; --warn:#DCA94E; --danger:#E8756A;
+      --normal-bg:#12271D; --warn-bg:#2A2214; --danger-bg:#2B1815;
+      --shadow:0 1px 2px #0006, 0 10px 28px #0005;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0B1219; --card:#111B24; --sunk:#0E1720; --ink:#E7EDF2;
+    --ink-2:#B4C2CE; --dim:#7C8D9C; --rule:#22303C;
+    --gauge:#69B4E4; --gauge-soft:#12293A;
+    --normal:#6BC495; --warn:#DCA94E; --danger:#E8756A;
+    --normal-bg:#12271D; --warn-bg:#2A2214; --danger-bg:#2B1815;
+    --shadow:0 1px 2px #0006, 0 10px 28px #0005;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:16px/1.65 "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px 96px}
+
+  /* masthead ------------------------------------------------------ */
+  header{padding:64px 0 40px; border-bottom:2px solid var(--ink)}
+  .eyebrow{
+    font:500 12px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--gauge);
+    margin-bottom:20px;
+  }
+  h1{
+    font:700 clamp(44px,7vw,76px)/0.98 "IBM Plex Serif", Georgia, serif;
+    margin:0 0 18px; letter-spacing:-.02em; text-wrap:balance;
+  }
+  .standfirst{
+    font-size:19px; line-height:1.6; color:var(--ink-2);
+    max-width:60ch; margin:0;
+  }
+  .standfirst b{color:var(--ink); font-weight:600}
+  .stamp{
+    display:flex; flex-wrap:wrap; gap:8px 28px; margin-top:28px;
+    font:500 12.5px/1 "IBM Plex Mono", monospace; color:var(--dim);
+    letter-spacing:.04em;
+  }
+
+  /* sections ------------------------------------------------------ */
+  section{padding:56px 0 8px; border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:0}
+  .sec-head{display:flex; gap:16px; align-items:baseline; margin-bottom:8px}
+  .sec-no{
+    font:600 12px/1 "IBM Plex Mono", monospace; color:var(--gauge);
+    letter-spacing:.1em; padding-top:6px; flex:none;
+  }
+  h2{
+    font:600 clamp(26px,3.6vw,36px)/1.15 "IBM Plex Serif", Georgia, serif;
+    margin:0; letter-spacing:-.015em; text-wrap:balance;
+  }
+  .lede{color:var(--ink-2); max-width:66ch; margin:14px 0 0; font-size:17px}
+  p{max-width:66ch}
+  h3{
+    font:600 17px/1.3 "IBM Plex Sans", sans-serif; margin:34px 0 10px;
+    letter-spacing:-.005em;
+  }
+  a{color:var(--gauge)}
+
+  /* the claim / test / verdict device ----------------------------- */
+  .finding{
+    background:var(--card); border:1px solid var(--rule); border-radius:10px;
+    box-shadow:var(--shadow); overflow:hidden; margin:18px 0;
+  }
+  .finding > div{padding:16px 20px; border-bottom:1px solid var(--rule)}
+  .finding > div:last-child{border-bottom:0}
+  .flabel{
+    font:600 11px/1 "IBM Plex Mono", monospace; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--dim); margin-bottom:7px;
+  }
+  .finding .verdict{background:var(--danger-bg)}
+  .finding .verdict .flabel{color:var(--danger)}
+  .finding .verdict.good{background:var(--normal-bg)}
+  .finding .verdict.good .flabel{color:var(--normal)}
+  .finding p{margin:0; max-width:72ch}
+
+  /* numbers ------------------------------------------------------- */
+  .figs{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+    gap:12px; margin:22px 0;
+  }
+  .fig{
+    background:var(--card); border:1px solid var(--rule); border-radius:9px;
+    padding:15px 16px; box-shadow:var(--shadow);
+  }
+  .fig b{
+    display:block; font:600 27px/1.15 "IBM Plex Mono", monospace;
+    font-variant-numeric:tabular-nums; letter-spacing:-.02em;
+  }
+  .fig span{display:block; color:var(--dim); font-size:12.5px; margin-top:5px; line-height:1.45}
+  .fig.danger b{color:var(--danger)} .fig.warn b{color:var(--warn)}
+  .fig.good b{color:var(--normal)} .fig.gauge b{color:var(--gauge)}
+
+  /* tables -------------------------------------------------------- */
+  .scroll{overflow-x:auto; margin:20px 0; border:1px solid var(--rule);
+          border-radius:9px; background:var(--card); box-shadow:var(--shadow)}
+  table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:520px}
+  th{
+    text-align:left; font:600 11px/1.3 "IBM Plex Mono", monospace;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--dim);
+    padding:13px 16px; border-bottom:1px solid var(--rule); white-space:nowrap;
+  }
+  td{padding:11px 16px; border-bottom:1px solid var(--rule); vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td.n, th.n{text-align:right; font-family:"IBM Plex Mono", monospace;
+             font-variant-numeric:tabular-nums; white-space:nowrap}
+  td.win{color:var(--normal); font-weight:600}
+  td.lose{color:var(--danger)}
+  caption{
+    caption-side:bottom; text-align:left; padding:11px 16px; color:var(--dim);
+    font-size:12.5px; border-top:1px solid var(--rule); line-height:1.5;
+  }
+
+  /* pills, code --------------------------------------------------- */
+  .pill{
+    display:inline-block; padding:2px 9px; border-radius:20px;
+    font:600 11px/1.7 "IBM Plex Mono", monospace; letter-spacing:.05em;
+  }
+  .pill.ok{background:var(--normal-bg); color:var(--normal)}
+  .pill.no{background:var(--danger-bg); color:var(--danger)}
+  .pill.part{background:var(--warn-bg); color:var(--warn)}
+  code{
+    font:500 13.5px/1.5 "IBM Plex Mono", monospace; background:var(--sunk);
+    padding:1.5px 6px; border-radius:4px; color:var(--ink-2);
+  }
+  pre{
+    background:var(--sunk); border:1px solid var(--rule); border-radius:9px;
+    padding:16px 18px; overflow-x:auto; margin:18px 0;
+    font:500 13px/1.7 "IBM Plex Mono", monospace; color:var(--ink-2);
+  }
+  .usp{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr));
+    gap:14px; margin:24px 0;
+  }
+  .usp article{
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:9px; padding:18px 20px; box-shadow:var(--shadow);
+  }
+  .usp h4{
+    margin:0 0 10px; padding-bottom:9px; border-bottom:1px solid var(--rule);
+    font:600 15.5px/1.35 "IBM Plex Sans", sans-serif; letter-spacing:-.005em;
+  }
+  .usp p{margin:0; font-size:14.5px; color:var(--ink-2); line-height:1.6}
+  ul{max-width:66ch; padding-left:20px}
+  li{margin:7px 0}
+  footer{
+    margin-top:56px; padding-top:26px; border-top:2px solid var(--ink);
+    color:var(--dim); font-size:13.5px; line-height:1.7;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .fig, .usp article{transition:transform .15s ease}
+    .fig:hover, .usp article:hover{transform:translateY(-1px)}
+  }
+</style>
+<style>*{margin:0}</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Flood decision system &nbsp;/&nbsp; India &nbsp;/&nbsp; build report</div>
+  <h1>PRAVAAH</h1>
+  <p class="standfirst">
+    We set out to predict which houses flood. We wrote the test that would kill
+    that claim, ran it on two real floods, and <b>it failed</b>. This is what the
+    failure taught us, what we built instead, and what runs today.
+  </p>
+  <div class="stamp">
+    <span>PS3 &middot; Disaster Response Intelligence Platform</span>
+    <span>Patna 2019 &middot; Delhi 2023 &middot; Mahanadi 2025</span>
+    <span>All sources open, no key, no login</span>
+  </div>
+</header>
+
+<!-- 1 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">01</div><h2>The problem, as stated and as it actually is</h2></div>
+  <p class="lede">
+    India loses roughly 1,600 lives and Rs 1,800 crore to floods a year. The
+    brief asks for a platform that turns flood prediction into emergency
+    planning and resource allocation.
+  </p>
+
+  <p>
+    The forecasts already exist. IMD runs a 21-member ensemble. CWC operates
+    354 gauged forecast stations with official danger levels. NDMA's SACHET can
+    reach every handset in the country. What none of them produce is a
+    <em>decision</em>: how many boats, to which ward, along which road, by when,
+    and who cannot be reached at all.
+  </p>
+
+  <p>
+    That gap is the problem. But there is a second problem underneath it, and we
+    only found it by testing ourselves.
+  </p>
+
+  <div class="finding">
+    <div><div class="flabel">The claim we started with</div>
+      <p>Free terrain and satellite data can predict urban flooding at building
+      level, using HAND (Height Above Nearest Drainage).</p></div>
+    <div><div class="flabel">The test we wrote to kill it</div>
+      <p>Hindcast two real floods against Sentinel-1 radar. Beat a one-line
+      elevation threshold. Reach recall above 70% at precision above 50%.</p></div>
+    <div class="verdict"><div class="flabel">Verdict</div>
+      <p><b>Failed.</b> HAND did not beat the one-line baseline. Best precision
+      anywhere was 9%, against a 50% target.</p></div>
+  </div>
+</section>
+
+<!-- 2 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">02</div><h2>What the test actually found</h2></div>
+  <p class="lede">
+    Three findings, in rising order of how much they mattered.
+  </p>
+
+  <h3>The event everyone cites has no ground truth</h3>
+  <p>
+    The design named Cyclone Michaung, Chennai, December 2023. Sentinel-1 passed
+    over Chennai on 6, 18 and 30 November and then not again until 17 January: a
+    <b>48-day gap containing the entire cyclone</b>. Confirmed against two
+    independent catalogues. Every optical scene in that window is 65 to 99%
+    cloud. So we chose the event by ground-truth availability instead, and of
+    ten major Indian floods only two have radar within three days of peak.
+  </p>
+
+  <h3>HAND loses to a one-line elevation threshold</h3>
+  <div class="scroll">
+    <table>
+      <caption>ROC AUC per 30 m cell against the radar-observed flood. Held
+        across three elevation models and six drainage thresholds.</caption>
+      <thead><tr><th>Predictor</th><th class="n">Patna 2019</th><th class="n">Delhi 2023</th></tr></thead>
+      <tbody>
+        <tr><td>HAND</td><td class="n"><span data-n="patna_auc_hand">0.657</span></td><td class="n"><span data-n="delhi_auc_hand">0.706</span></td></tr>
+        <tr><td>Plain elevation threshold</td><td class="n"><span data-n="patna_auc_elev">0.657</span></td><td class="n"><span data-n="delhi_auc_elev">0.663</span></td></tr>
+        <tr><td>Distance to the river</td><td class="n"><span data-n="patna_auc_dist">0.662</span></td><td class="n win"><span data-n="delhi_auc_dist">0.939</span></td></tr>
+        <tr><td>Google inundation history</td><td class="n win">0.758</td><td class="n">0.654</td></tr>
+        <tr><td>Precision at 70% recall</td><td class="n lose">9%</td><td class="n lose">5%</td></tr>
+        <tr><td>Target</td><td class="n">50%</td><td class="n">50%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The ground truth is not the disaster</h3>
+  <p>
+    Of <span data-n="buildings_sampled">455,860</span> buildings in Patna, radar labels <b><span data-n="buildings_flooded">659</span> as flooded</b>. During a
+    week-long urban flood. The flood it does map sits a median of 134 metres
+    from the river in Patna and 170 in Delhi: it is the channel widening, not the
+    city drowning. Water among dense buildings <em>raises</em> radar backscatter
+    through double-bounce against walls instead of lowering it.
+  </p>
+  <p>
+    Confirmed from the ground. The Bihar Inter Agency Group and Sphere India
+    rapid needs assessment reports 80% of Patna houses took water, and names
+    Rajendra Nagar, Kankarbagh, Boring Road and Pataliputra Colony as worst hit.
+    All are pluvial, kilometres from the Ganga. <b>None of them appear in the
+    satellite flood map.</b>
+  </p>
+  <div class="finding">
+    <div class="verdict"><div class="flabel">Consequence</div>
+      <p>The design's own test cannot be passed by anyone on free radar, because
+      the ground truth does not contain the phenomenon. That is a statement about
+      the field, not about our code.</p></div>
+  </div>
+</section>
+
+<!-- 3 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">03</div><h2>What we built instead</h2></div>
+  <p class="lede">
+    Depth became an <b>input</b>. The system stopped guessing where water goes
+    and started doing the part nobody does.
+  </p>
+
+  <pre>HAZARD     a depth map, from CWC's own model or fitted to observation
+NETWORK    road graph carrying terrain, not a snapshot
+EXPOSURE   who and how many stand in the water, by reporting unit
+ROUTES     who can still reach a shelter, and who depends on a bridge
+ALLOCATE   min-cost flow to shelters of measured capacity
+ALERT      cost-loss trigger, CAP 1.2 XML, 160-character SMS</pre>
+
+  <p>
+    Where no official depth field exists, the water level is <em>fitted to what
+    the satellite observed</em> at a known discharge, on two dates, then driven
+    forward by the discharge series. That is not prediction from terrain; it is
+    filling a surface whose height was measured.
+  </p>
+
+  <div class="finding">
+    <div><div class="flabel">The check that mattered</div>
+      <p>CWC's Gandhighat gauge sits 3.8 km from our reference point with an
+      official danger level of <b>48.60 m</b>. Our independently fitted level for
+      30 September 2019 was <b>48.70 m</b>.</p></div>
+    <div class="verdict good"><div class="flabel">Result</div>
+      <p>Ten centimetres, by a completely separate route. The rapid needs
+      assessment reports "in most of the slums water level was 3 feet" (0.91 m);
+      our modelled median over flooded land is <span data-n="modelled_median_depth_m">0.73</span> m. That agreement got slightly <em>worse</em> once the river channel was excluded from the flood, which is the right direction: the river cells were deep, and counting them flattered the median into a match it had not earned.</p></div>
+  </div>
+</section>
+
+<!-- 4 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">04</div><h2>What makes it different</h2></div>
+  <p class="lede">
+    Not the modelling. Every number below comes from something the system says
+    that other systems do not.
+  </p>
+
+  <div class="usp">
+    <article>
+      <h4>It names who it cannot reach</h4>
+      <p>593 people in Patna have no road route to any shelter at any water
+      level. They are on river islands. A bus is not coming and the plan says so,
+      instead of quietly excluding them from the total.</p>
+    </article>
+    <article>
+      <h4>It refuses to guess about bridges</h4>
+      <p>A terrain model reads the river <em>under</em> a bridge deck, which made
+      every Ganga bridge appear under nine metres of water. Bridges are now
+      neither called open nor flooded. The system reports that <span data-n="bridge_dependent">17,225</span> people are
+      placed only because a bridge is assumed passable.</p>
+    </article>
+    <article>
+      <h4>Roads change mode, they do not vanish</h4>
+      <p>Under 0.3 m a car passes; to 0.5 m a two-wheeler; to 1.5 m a person on
+      foot; above that a boat. Each road carries its own controlling ground
+      height, so a bus and a rescue boat get different maps of the same district,
+      and the bus's map expires first.</p>
+    </article>
+    <article>
+      <h4>Capacity is measured, not assumed</h4>
+      <p>Shelter capacity is the roof footprint inside each campus divided by the
+      NDMA minimum of 3.5 m² per person. Our earlier guesses were wrong in both
+      directions: a school assumed at 500 measured 288; one college assumed at
+      1,000 measured 10,020.</p>
+    </article>
+    <article>
+      <h4>The trigger is arithmetic, not a hunch</h4>
+      <p>Act when probability exceeds cost divided by loss. The probability is
+      computed live as the share of a 50-member forecast ensemble above a
+      published return period. Nobody types it.</p>
+    </article>
+    <article>
+      <h4>It stops rather than answer wrongly</h4>
+      <p>A calibration that misses observed extent by more than 15% is rejected
+      and the run halts. A discharge that disagrees with the river's own return
+      periods by an order of magnitude is refused. A missing population tile
+      raises instead of reporting nobody.</p>
+    </article>
+  </div>
+</section>
+
+<!-- 5 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">05</div><h2>What is running today</h2></div>
+
+  <div class="figs">
+    <div class="fig gauge"><b>354</b><span>CWC stations pulled live, with official danger levels</span></div>
+    <div class="fig danger"><b>12</b><span>above danger level at the last pull</span></div>
+    <div class="fig warn"><b>29</b><span>above warning level</span></div>
+    <div class="fig gauge"><b>65</b><span>live NDMA water alerts</span></div>
+  </div>
+
+  <h3>The Patna plan, verified end to end</h3>
+  <div class="figs">
+    <div class="fig"><b><span data-n="people_wet">59,495</span></b><span>people in the water</span></div>
+    <div class="fig good"><b><span data-n="placed">47,443</span></b><span>placed in <span data-n="shelters_used">55</span> of <span data-n="shelters_measured">90</span> measured shelters, mean journey 72 min</span></div>
+    <div class="fig warn"><b><span data-n="beyond_reach">11,177</span></b><span>beyond 90 minutes of a shelter with room</span></div>
+    <div class="fig danger"><b><span data-n="no_route">591</span></b><span>no road route at any water level</span></div>
+  </div>
+
+  <h3>Running on a government operational forecast</h3>
+  <p>
+    C-Flood, run by C-DAC with NRSC and CWC under the National Supercomputing
+    Mission, publishes a hydrodynamic inundation forecast: 30 m depth in metres,
+    every three hours out to 48, with 173 archived runs. We pull it directly.
+    For the Mahanadi flood of 30 July 2025, at 1.83 times the two-year return
+    period, the system reports <b>510 km² wet and 178,411 people</b> straight off
+    CWC's own model.
+  </p>
+
+  <h3>Backend</h3>
+  <p>
+    FastAPI over SQLite, <b>44 of 44 tests passing</b>. Read endpoints serve what
+    the pipeline computed. Write endpoints accept the three things no instrument
+    can see.
+  </p>
+  <div class="scroll">
+    <table>
+      <caption>Phone numbers are stored hashed: the system needs to recognise a
+        repeat caller, not hold a list of flood victims' numbers.</caption>
+      <thead><tr><th>Endpoint</th><th>Accepts</th><th>Why it exists</th></tr></thead>
+      <tbody>
+        <tr><td><code>POST /api/reports</code></td><td>depth, place, photo</td>
+          <td>The only sensor that sees urban flooding is a person standing in it</td></tr>
+        <tr><td><code>POST /api/help</code></td><td>people, mobility</td>
+          <td>"I cannot leave" is a different request, queued least-mobile first</td></tr>
+        <tr><td><code>POST /api/decisions</code></td><td>approve or override</td>
+          <td>Every override carries a reason code and survives a closed browser</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Four interfaces, each a single file with its data inlined</h3>
+  <ul>
+    <li><b>India Flood Watch</b> — 354 stations, live alerts, forecast status</li>
+    <li><b>Officer desk</b> — situation, wards, plan, act, evidence</li>
+    <li><b>Flood map</b> — the water itself, with a slider across the forecast</li>
+    <li><b>Citizen page</b> — one person, one ward, their shelter and their route</li>
+  </ul>
+</section>
+
+<!-- 6 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">06</div><h2>What does not work, and why</h2></div>
+  <p class="lede">
+    Stated plainly, because a system that hides its gaps is the one that fails in
+    the field.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Gap</th><th>Status</th><th>What it would take</th></tr></thead>
+      <tbody>
+        <tr><td>Urban pluvial flooding</td><td><span class="pill no">unsolved</span></td>
+          <td>No dataset sees water in a dense Indian city. Rajendra Nagar and
+              Kankarbagh appear in no gauge, no radar mask and no model run. This
+              is India's largest flood problem and the data does not exist.</td></tr>
+        <tr><td>Allocation in the Mahanadi delta</td><td><span class="pill no">blocked</span></td>
+          <td>OSM holds 2 shelter polygons for the whole area. Odisha's roughly
+              880 cyclone shelters are the real list and none are mapped.</td></tr>
+        <tr><td>Delhi over time</td><td><span class="pill part">partial</span></td>
+          <td>Its Yamuna is embanked: connected area jumps from 0 to 121 km²
+              across ten centimetres of level, so no level reproduces the observed
+              extent. It runs as one snapshot and says so.</td></tr>
+        <tr><td>The plan layer nationally</td><td><span class="pill part">partial</span></td>
+          <td>The watch layer covers all 354 stations. The plan layer runs per
+              area, on demand, and needs that area's roads and buildings first.</td></tr>
+        <tr><td>Citizen page writes</td><td><span class="pill ok">now possible</span></td>
+          <td>The backend accepts reports, help requests and decisions. Wiring the
+              page to it is a frontend task.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7 ---------------------------------------------------------------- -->
+<section>
+  <div class="sec-head"><div class="sec-no">07</div><h2>Where every number comes from</h2></div>
+  <p class="lede">
+    Everything below is free and needs no key or login. Several were listed in
+    our own earlier documents as government-login-only. That was wrong, and
+    finding out changed the project.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Source</th><th>Gives</th><th>Limit worth knowing</th></tr></thead>
+      <tbody>
+        <tr><td>CWC Flood Forecasting System</td><td>354 stations, official danger and warning levels, live readings, issued forecasts</td><td>River gauges only</td></tr>
+        <tr><td>C-Flood (CWC, NRSC, C-DAC)</td><td>Operational inundation depth, 30 m, 3-hourly to 48 h, 173 archived runs</td><td>Mahanadi basin only</td></tr>
+        <tr><td>NDMA SACHET</td><td>Live public alerts with area, centroid and local-language text</td><td>Severity mixes CAP words with IMD colours</td></tr>
+        <tr><td>Google GRRR</td><td>Return periods for 1,031,646 gauges; reforecast at 0 to 7 days</td><td>Snap to the largest outlet nearby, never the nearest</td></tr>
+        <tr><td>Google inundation history</td><td>How often each 128 m pixel was wet, 1999 to 2020</td><td>Frequency, not an event</td></tr>
+        <tr><td>GloFAS via Open-Meteo</td><td>Discharge, historical and forecast, 50-member ensemble</td><td>Ensemble is null for reanalysis</td></tr>
+        <tr><td>Sentinel-1, Copernicus DEM, GHS-POP, OpenStreetMap</td><td>Flood extent, terrain, population, roads and shelters</td><td>OSM coverage collapses outside cities</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Useful lead time, measured rather than promised</h3>
+  <p>
+    The brief asked for 48 to 72 hours. Using Google's reforecast archive, for
+    Patna 2019 the two-year threshold was crossed on 30 September and the first
+    forecast to call it was issued on <b>24 September: six days</b>. That is the
+    river signal, which sets the ceiling. Everything downstream spends that time;
+    none of it adds any.
+  </p>
+</section>
+
+<footer>
+  <p style="max-width:66ch">
+    Every figure on this page is regenerated from the repository by one script
+    that runs offline. The negative results are kept deliberately: a team that has
+    measured its own limits has already answered the hardest question in review.
+  </p>
+  <p style="max-width:66ch;opacity:.72;font-size:.86em">
+    The numbers here are not typed in. <code>verify.py</code> recomputes them and
+    writes <code>out/numbers.json</code>; <code>stamp_docs.py</code> fills them
+    into this page from that file, and <code>stamp_docs.py --check</code> exits
+    non-zero if any of them has drifted. Last stamped
+    <span data-n="generated">2026-08-31 21:15 UTC, code cbd657062600</span>.
+  </p>
+</footer>
+
+</div>
+
+</body>
+</html>

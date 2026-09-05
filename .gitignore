@@ -1,0 +1,37 @@
+# the district secret that scrambles phone numbers. Never commit, never copy
+# alongside the database: together they turn the contact column back into a
+# list of phone numbers.
+data/.contact_key
+
+# citizen submissions. Real people, real locations, real photos.
+data/pravaah.sqlite
+data/pravaah.sqlite-*
+data/photos/
+
+# pipeline inputs: 2 GB of DEM, SAR, buildings and population rasters, all of
+# them re-fetchable from the public sources named in config.py and fetch_*.py.
+data/*
+
+# the app. 6 GB of node_modules and gradle output.
+app/
+
+# environment
+.venv/
+.pip-cache/
+__pycache__/
+*.pyc
+tmp/
+.impeccable/
+
+# build artefacts. The APKs go on a GitHub release, not in the tree.
+out/*.apk
+out/*.npy
+out/*.tif
+out/_api.log
+out/alerts_cache.json
+
+# the shelter tables are hand-measured, not fetched. Keep them.
+!data/*_shelters_measured.csv
+
+# depth rasters, only ever read by build_map_data.py, whose output is committed
+out/depth/

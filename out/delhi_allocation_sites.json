@@ -1,0 +1,101 @@
+[
+ {
+  "name": "Salwan Public School",
+  "row": 722,
+  "lat": 28.77727342039795,
+  "lon": 77.25676344141375,
+  "kind": "school",
+  "cap": 931,
+  "assigned": 104
+ },
+ {
+  "name": "Swami Shraddhanand College",
+  "row": 232,
+  "lat": 28.794402617054565,
+  "lon": 77.14180234334025,
+  "kind": "college",
+  "cap": 138,
+  "assigned": 82
+ },
+ {
+  "name": "community_centre at 28.7403N 77.1655E",
+  "row": 294,
+  "lat": 28.74026127176714,
+  "lon": 77.16548818202916,
+  "kind": "community_centre",
+  "cap": 222,
+  "assigned": 70
+ },
+ {
+  "name": "Rav Mehar Chand Saraswati Vidya Mandir",
+  "row": 299,
+  "lat": 28.754093668104925,
+  "lon": 77.1720168877555,
+  "kind": "school",
+  "cap": 513,
+  "assigned": 58
+ },
+ {
+  "name": "Mata Sukhdevi Public School",
+  "row": 231,
+  "lat": 28.7750558568112,
+  "lon": 77.14234110025082,
+  "kind": "school",
+  "cap": 17,
+  "assigned": 17
+ },
+ {
+  "name": "MCD Primary School",
+  "row": 295,
+  "lat": 28.742457688027823,
+  "lon": 77.16704201573712,
+  "kind": "school",
+  "cap": 530,
+  "assigned": 11
+ },
+ {
+  "name": "BHAGWAN DAS SCHOOL",
+  "row": 848,
+  "lat": 28.694551831363075,
+  "lon": 77.32836991041033,
+  "kind": "school",
+  "cap": 1053,
+  "assigned": 6
+ },
+ {
+  "name": "MCD Primary School",
+  "row": 293,
+  "lat": 28.733965763460876,
+  "lon": 77.16859246315867,
+  "kind": "school",
+  "cap": 583,
+  "assigned": 6
+ },
+ {
+  "name": "school at 28.7304N 77.1624E",
+  "row": 290,
+  "lat": 28.730372716385737,
+  "lon": 77.16239079017167,
+  "kind": "school",
+  "cap": 530,
+  "assigned": 3
+ },
+ {
+  "name": "school at 28.7495N 77.1817E",
+  "row": 372,
+  "lat": 28.7495338428858,
+  "lon": 77.18166960103704,
+  "kind": "school",
+  "cap": 706,
+  "assigned": 2
+ },
+ {
+  "name": "Gyan Sarovar School",
+  "row": 228,
+  "lat": 28.74355658179102,
+  "lon": 77.154100729289,
+  "kind": "school",
+  "cap": 139,
+  "assigned": 2
+ }
+]

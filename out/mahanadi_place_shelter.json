@@ -1,0 +1,12 @@
+{
+ "Balikuda": {
+  "shelter": "EKBERUAN",
+  "people": 102,
+  "shelters_used": 1
+ },
+ "Machgaon": {
+  "shelter": "MUDGAL",
+  "people": 4664,
+  "shelters_used": 10
+ }
+}

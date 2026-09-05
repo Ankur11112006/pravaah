@@ -1,0 +1,576 @@
+{
+ "unit": "frame",
+ "first": 0.0,
+ "last": 0.0,
+ "survival": {
+  "car": {
+   "survives": 361,
+   "closes": 0,
+   "gone": 0,
+   "never": 3
+  },
+  "bike": {
+   "survives": 361,
+   "closes": 0,
+   "gone": 0,
+   "never": 3
+  },
+  "foot": {
+   "survives": 361,
+   "closes": 0,
+   "gone": 0,
+   "never": 3
+  }
+ },
+ "hours": [
+  0
+ ],
+ "points": {
+  "7247553737": {
+   "people": 5,
+   "car_cutoff": 1.0,
+   "ground": 209.33923677184927,
+   "bridge_dependent": false
+  },
+  "3003668363": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.1483963642337,
+   "bridge_dependent": false
+  },
+  "9805482591": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.51316833496094,
+   "bridge_dependent": false
+  },
+  "3003668340": {
+   "people": 3,
+   "car_cutoff": -Infinity,
+   "ground": 208.6041960896836,
+   "bridge_dependent": false
+  },
+  "9805482602": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.93812561035156,
+   "bridge_dependent": false
+  },
+  "9803411854": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.4176899532487,
+   "bridge_dependent": false
+  },
+  "3003702023": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.42437098276434,
+   "bridge_dependent": false
+  },
+  "9806033824": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.55581316526983,
+   "bridge_dependent": false
+  },
+  "9814394814": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.60433884516092,
+   "bridge_dependent": false
+  },
+  "9792415033": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.3692169189453,
+   "bridge_dependent": true
+  },
+  "3003668133": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 208.36329318372626,
+   "bridge_dependent": false
+  },
+  "9813755610": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.53779624038108,
+   "bridge_dependent": false
+  },
+  "9813747945": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 208.1754390948478,
+   "bridge_dependent": false
+  },
+  "9792319769": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 215.2615203857422,
+   "bridge_dependent": true
+  },
+  "9816210655": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.69463996290565,
+   "bridge_dependent": false
+  },
+  "9813747947": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.71806543069764,
+   "bridge_dependent": false
+  },
+  "9792301352": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 214.06469293416635,
+   "bridge_dependent": true
+  },
+  "9813747946": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.85411018638112,
+   "bridge_dependent": false
+  },
+  "9813747948": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.0509695440927,
+   "bridge_dependent": false
+  },
+  "4218649055": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 207.5069834138029,
+   "bridge_dependent": false
+  },
+  "3003701931": {
+   "people": 9,
+   "car_cutoff": 1.0,
+   "ground": 207.6066729824519,
+   "bridge_dependent": false
+  },
+  "4219021438": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.76896976182496,
+   "bridge_dependent": false
+  },
+  "9805709696": {
+   "people": 8,
+   "car_cutoff": 1.0,
+   "ground": 207.54855546170177,
+   "bridge_dependent": false
+  },
+  "3003665762": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.96997259405774,
+   "bridge_dependent": false
+  },
+  "3738847907": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.09208598978086,
+   "bridge_dependent": false
+  },
+  "9801117571": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 215.15175038401654,
+   "bridge_dependent": true
+  },
+  "3005401550": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.36985487653826,
+   "bridge_dependent": false
+  },
+  "3005401465": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 207.27169855877207,
+   "bridge_dependent": false
+  },
+  "9805278515": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.30289450942726,
+   "bridge_dependent": false
+  },
+  "3005401432": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.52580935799614,
+   "bridge_dependent": false
+  },
+  "9814110965": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 206.9686295978233,
+   "bridge_dependent": false
+  },
+  "4219019160": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.87344058927332,
+   "bridge_dependent": false
+  },
+  "3005337636": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.47235107421875,
+   "bridge_dependent": false
+  },
+  "9832328151": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.46478211997905,
+   "bridge_dependent": false
+  },
+  "4218796225": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.7881317138672,
+   "bridge_dependent": false
+  },
+  "3005166708": {
+   "people": 5,
+   "car_cutoff": 1.0,
+   "ground": 207.51094763179847,
+   "bridge_dependent": false
+  },
+  "3005166704": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.8057861328125,
+   "bridge_dependent": false
+  },
+  "9832321532": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.32754554880435,
+   "bridge_dependent": false
+  },
+  "3008698865": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 214.26663208007812,
+   "bridge_dependent": false
+  },
+  "4221241024": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 214.12815856933594,
+   "bridge_dependent": false
+  },
+  "4218812991": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 208.8887306369522,
+   "bridge_dependent": false
+  },
+  "4218880108": {
+   "people": 9,
+   "car_cutoff": 1.0,
+   "ground": 207.7931926450625,
+   "bridge_dependent": false
+  },
+  "9837803923": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.8935089111328,
+   "bridge_dependent": false
+  },
+  "9827116657": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.52862548828125,
+   "bridge_dependent": false
+  },
+  "4231315115": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 207.5371856689453,
+   "bridge_dependent": false
+  },
+  "9827910675": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 208.7241701692645,
+   "bridge_dependent": false
+  },
+  "9837777391": {
+   "people": 11,
+   "car_cutoff": 1.0,
+   "ground": 206.61485290527344,
+   "bridge_dependent": false
+  },
+  "9828037017": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 207.74930454714885,
+   "bridge_dependent": false
+  },
+  "9841140118": {
+   "people": 6,
+   "car_cutoff": 1.0,
+   "ground": 208.56857299804688,
+   "bridge_dependent": false
+  },
+  "9841140117": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.78065490722656,
+   "bridge_dependent": false
+  },
+  "9832246093": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 207.85790119604553,
+   "bridge_dependent": false
+  },
+  "9841140129": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 208.6406707763672,
+   "bridge_dependent": false
+  },
+  "9837846381": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 206.70767211914062,
+   "bridge_dependent": false
+  },
+  "9827742386": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 208.05415129926766,
+   "bridge_dependent": false
+  },
+  "6195189844": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 208.08583068847656,
+   "bridge_dependent": false
+  },
+  "9827876292": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 208.17312622070312,
+   "bridge_dependent": false
+  },
+  "9821604243": {
+   "people": 11,
+   "car_cutoff": 1.0,
+   "ground": 207.8095474243164,
+   "bridge_dependent": false
+  },
+  "4210509908": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 207.41738891601562,
+   "bridge_dependent": false
+  },
+  "4231656922": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.95310974121094,
+   "bridge_dependent": false
+  },
+  "4231251862": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 206.29255364936122,
+   "bridge_dependent": false
+  },
+  "9827883828": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.60082431170275,
+   "bridge_dependent": false
+  },
+  "9835868914": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 206.43072509765625,
+   "bridge_dependent": false
+  },
+  "4231314920": {
+   "people": 5,
+   "car_cutoff": 1.0,
+   "ground": 206.39925384521484,
+   "bridge_dependent": false
+  },
+  "7245424532": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 207.7460259306378,
+   "bridge_dependent": false
+  },
+  "9827070135": {
+   "people": 8,
+   "car_cutoff": 1.0,
+   "ground": 207.86642456054688,
+   "bridge_dependent": false
+  },
+  "9827070151": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 208.0271759033203,
+   "bridge_dependent": false
+  },
+  "5725230399": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 207.5609893798828,
+   "bridge_dependent": false
+  },
+  "9835514863": {
+   "people": 16,
+   "car_cutoff": 1.0,
+   "ground": 206.31328708026598,
+   "bridge_dependent": false
+  },
+  "9828037070": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 207.74081025072104,
+   "bridge_dependent": false
+  },
+  "9835402203": {
+   "people": 8,
+   "car_cutoff": 1.0,
+   "ground": 206.43861389160156,
+   "bridge_dependent": false
+  },
+  "6195211408": {
+   "people": 11,
+   "car_cutoff": 1.0,
+   "ground": 206.53404235839844,
+   "bridge_dependent": false
+  },
+  "9834883837": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 207.25031280517578,
+   "bridge_dependent": false
+  },
+  "9834863832": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 207.31761614208108,
+   "bridge_dependent": false
+  },
+  "9825046592": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 205.9161376953125,
+   "bridge_dependent": false
+  },
+  "9843241120": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 206.94345092773438,
+   "bridge_dependent": false
+  },
+  "9851991096": {
+   "people": 7,
+   "car_cutoff": 1.0,
+   "ground": 206.7399352489842,
+   "bridge_dependent": false
+  },
+  "9851991094": {
+   "people": 6,
+   "car_cutoff": 1.0,
+   "ground": 206.4794447501196,
+   "bridge_dependent": false
+  },
+  "9836021097": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 205.0,
+   "bridge_dependent": false
+  },
+  "9851991092": {
+   "people": 1,
+   "car_cutoff": 1.0,
+   "ground": 206.591064453125,
+   "bridge_dependent": false
+  },
+  "9835383264": {
+   "people": 8,
+   "car_cutoff": 1.0,
+   "ground": 205.0,
+   "bridge_dependent": false
+  },
+  "4106969866": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 205.0,
+   "bridge_dependent": false
+  },
+  "9728884155": {
+   "people": 30,
+   "car_cutoff": 1.0,
+   "ground": 206.58089447021484,
+   "bridge_dependent": false
+  },
+  "9598913545": {
+   "people": 8,
+   "car_cutoff": 1.0,
+   "ground": 205.68430442377996,
+   "bridge_dependent": false
+  },
+  "9598913544": {
+   "people": 16,
+   "car_cutoff": 1.0,
+   "ground": 206.64704604884147,
+   "bridge_dependent": false
+  },
+  "9838759078": {
+   "people": 4,
+   "car_cutoff": 1.0,
+   "ground": 206.9723663330078,
+   "bridge_dependent": false
+  },
+  "12144130973": {
+   "people": 3,
+   "car_cutoff": 1.0,
+   "ground": 206.62714465445953,
+   "bridge_dependent": false
+  },
+  "12144130972": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 206.72216796875,
+   "bridge_dependent": false
+  },
+  "9838759077": {
+   "people": 5,
+   "car_cutoff": 1.0,
+   "ground": 206.6125717163086,
+   "bridge_dependent": false
+  },
+  "12144130974": {
+   "people": 5,
+   "car_cutoff": 1.0,
+   "ground": 205.85048064565186,
+   "bridge_dependent": false
+  },
+  "12144130975": {
+   "people": 6,
+   "car_cutoff": 1.0,
+   "ground": 206.21206731072746,
+   "bridge_dependent": false
+  },
+  "913485968": {
+   "people": 2,
+   "car_cutoff": 1.0,
+   "ground": 205.8049851421453,
+   "bridge_dependent": true
+  }
+ }
+}

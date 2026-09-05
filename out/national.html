@@ -1,0 +1,230 @@
+<meta charset="utf-8">
+<title>India Flood Watch</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#131a22; --sunk:#0e141b; --line:#222c37; --ink:#e6edf3;
+    --dim:#8b98a5; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --acc:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:13.5px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  header{display:flex;align-items:baseline;gap:14px;padding:12px 18px;
+         border-bottom:1px solid var(--line);flex-wrap:wrap}
+  h1{margin:0;font-size:17px;letter-spacing:.2px}
+  header .sub{color:var(--dim);font-size:12.5px}
+  header .built{margin-left:auto;color:var(--dim);font-size:11.5px}
+  .wrap{display:flex;height:calc(100vh - 50px);min-height:560px}
+  #stage{flex:1;position:relative;min-width:0}
+  canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+  aside{width:370px;flex:none;border-left:1px solid var(--line);background:var(--panel);
+        overflow-y:auto;padding:15px}
+  .k{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.7px;
+     margin:18px 0 8px}
+  .k:first-child{margin-top:0}
+  .tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .tile{background:var(--sunk);border:1px solid var(--line);border-radius:7px;padding:9px}
+  .tile b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+  .tile span{color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
+  .bad b{color:var(--bad)} .warn b{color:var(--warn)} .ok b{color:var(--ok)}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--dim);font-weight:500;font-size:10.5px;
+     text-transform:uppercase;letter-spacing:.5px;padding:5px 4px;
+     border-bottom:1px solid var(--line)}
+  td{padding:5px 4px;border-bottom:1px solid var(--line);font-size:12.5px}
+  td.n,th.n{text-align:right}
+  tr.sel td{background:#1b2430}
+  tr:hover td{background:#171f29;cursor:pointer}
+  .note{color:var(--dim);font-size:11.5px;margin-top:8px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  #detail{background:var(--sunk);border:1px solid var(--line);border-radius:7px;
+          padding:11px;min-height:96px}
+  #detail h4{margin:0 0 6px;font-size:14px}
+  .row{display:flex;justify-content:space-between;padding:3px 0;
+       font-variant-numeric:tabular-nums;font-size:12.5px}
+  .row span{color:var(--dim)}
+  .fc{margin-top:8px;font-size:11.5px;color:var(--dim)}
+  .fc b{color:var(--ink);font-variant-numeric:tabular-nums}
+  #tip{position:absolute;pointer-events:none;background:#0b0f14ee;border:1px solid var(--line);
+       border-radius:6px;padding:6px 9px;font-size:12px;display:none;white-space:nowrap}
+</style>
+
+<header>
+  <h1>India Flood Watch</h1>
+  <span class="sub">every gauged station the Central Water Commission forecasts</span>
+  <span class="built" id="built"></span>
+</header>
+
+<div class="wrap">
+  <div id="stage"><canvas id="cv"></canvas><div id="tip"></div></div>
+  <aside>
+    <div class="k">Right now</div>
+    <div class="tiles">
+      <div class="tile bad"><b id="t-bad">0</b><span>above danger</span></div>
+      <div class="tile warn"><b id="t-warn">0</b><span>above warning</span></div>
+      <div class="tile ok"><b id="t-ok">0</b><span>normal</span></div>
+    </div>
+    <div class="note" id="counts"></div>
+
+    <div class="k">Station</div>
+    <div id="detail"><span class="note">Click a station on the map, or a row below.</span></div>
+
+    <div class="k">NDMA alerts live now</div>
+    <div id="alerts"></div>
+
+    <div class="k">Operational inundation forecast</div>
+    <div id="cflood" class="note"></div>
+
+    <div class="k">Above danger level</div>
+    <table id="tbl"><thead><tr>
+      <th>Station</th><th class="n">Now</th><th class="n">Danger</th><th class="n">Over</th>
+    </tr></thead><tbody></tbody></table>
+
+    <div class="k">What this is</div>
+    <div class="note">
+      Live water level and CWC's own issued forecast, pulled straight from
+      ffs.india-water.gov.in. No key and no login: the service answers a plain
+      HTTP query. Levels are metres above the station datum and are only
+      comparable to that station's own danger level, never between stations.
+      Reservoir inflow stations are in cumecs and are drawn as squares.
+      Alerts come from NDMA SACHET and the inundation run from C-Flood
+      (inf.cwc.gov.in). All three sources are public and unauthenticated.
+    </div>
+  </aside>
+</div>
+
+<script>
+const CV = document.getElementById('cv'), CX = CV.getContext('2d');
+const $ = id => document.getElementById(id);
+let D = null, view = null, sel = null;
+const COL = ['#3fb950', '#d29922', '#f85149'];
+
+fetch('national_data.json').then(r => r.json()).then(d => { D = d; boot(); })
+  .catch(e => document.body.insertAdjacentHTML('beforeend',
+    '<div style="padding:20px;color:#f85149">' + e.message + '</div>'));
+
+function boot() {
+  $('built').textContent = 'pulled ' + D.built;
+  const c = [0, 0, 0];
+  let noData = 0;
+  for (const r of D.rows) r.st === null ? noData++ : c[r.st]++;
+  $('t-bad').textContent = c[2]; $('t-warn').textContent = c[1]; $('t-ok').textContent = c[0];
+  $('counts').textContent = D.rows.length + ' stations, ' + noData
+    + ' not reporting. ' + D.rows.filter(r => r.f.length).length + ' carry a live forecast.';
+
+  const A = D.alerts || [];
+  const sevRank = s => ({WARNING:0, Orange:1, ALERT:2, WATCH:3, Yellow:4}[s] ?? 5);
+  $('alerts').innerHTML = A.length
+    ? A.slice().sort((a, b) => sevRank(a.sev) - sevRank(b.sev)).slice(0, 6).map(a =>
+      `<div style="padding:6px 0;border-bottom:1px solid var(--line)">
+         <b style="color:${/WARN|Orange/.test(a.sev) ? '#f85149' : '#d29922'}">${esc(a.sev)}</b>
+         <span style="color:var(--dim)"> &middot; ${esc(a.kind)}</span>
+         <div class="note" style="margin:2px 0 0">${esc(a.area)}</div></div>`).join('')
+      + `<div class="note">${A.length} water-related alerts live on SACHET.</div>`
+    : '<div class="note">SACHET feed not reachable.</div>';
+
+  const cf = D.cflood;
+  $('cflood').innerHTML = cf
+    ? `C-Flood published a run for <b>${esc(cf.date)}</b> with frames at
+       ${cf.frames.join(', ')} hours ahead, 30 m depth in metres.
+       Coverage is ${esc(cf.basin)} only, not the whole country.`
+    : 'No C-Flood run reachable.';
+
+  const over = D.rows.filter(r => r.st === 2).sort((a, b) => (b.o - b.d) - (a.o - a.d));
+  $('tbl').tBodies[0].innerHTML = over.map((r, i) =>
+    `<tr data-c="${esc(r.c)}"><td>${esc(r.n)}</td><td class="n">${r.o.toFixed(2)}</td>
+     <td class="n">${r.d.toFixed(2)}</td>
+     <td class="n" style="color:#f85149">+${(r.o - r.d).toFixed(2)}</td></tr>`).join('');
+  for (const tr of $('tbl').tBodies[0].rows)
+    tr.onclick = () => pick(D.rows.find(x => x.c === tr.dataset.c));
+
+  CV.onmousemove = ev => hover(ev);
+  CV.onclick = ev => { const h = nearest(ev); if (h) pick(h); };
+  CV.onmouseleave = () => { $('tip').style.display = 'none'; };
+  addEventListener('resize', resize);
+  resize();
+  if (over.length) pick(over[0]);
+}
+
+function resize() {
+  const b = CV.parentElement.getBoundingClientRect(), s = devicePixelRatio || 1;
+  CV.width = b.width * s; CV.height = b.height * s;
+  const la = D.rows.map(r => r.la), lo = D.rows.map(r => r.lo);
+  const pad = 0.6;
+  const w = Math.min(...lo) - pad, e = Math.max(...lo) + pad;
+  const so = Math.min(...la) - pad, n = Math.max(...la) + pad;
+  const kx = Math.cos((n + so) / 2 * Math.PI / 180);
+  const sc = Math.min(CV.width / ((e - w) * kx), CV.height / (n - so)) * 0.95;
+  view = { w, n, kx, sc, s,
+           ox: (CV.width - (e - w) * kx * sc) / 2,
+           oy: (CV.height - (n - so) * sc) / 2 };
+  draw();
+}
+const px = r => [view.ox + (r.lo - view.w) * view.kx * view.sc,
+                 view.oy + (view.n - r.la) * view.sc];
+
+function draw() {
+  const s = view.s;
+  CX.fillStyle = '#0b0f14'; CX.fillRect(0, 0, CV.width, CV.height);
+  for (const r of D.rows) {
+    const [x, y] = px(r);
+    const col = r.st === null ? '#3d4552' : COL[r.st];
+    const size = (r.st === 2 ? 5.5 : r.st === 1 ? 4.2 : 3.2) * s;
+    CX.globalAlpha = r.st === null ? 0.5 : 1;
+    if (r.st === 2) {                       // halo so the alarms carry across the map
+      CX.beginPath(); CX.arc(x, y, size * 2.6, 0, 7);
+      CX.fillStyle = 'rgba(248,81,73,.18)'; CX.fill();
+    }
+    CX.fillStyle = col;
+    if (r.k === 'Inflow') CX.fillRect(x - size, y - size, size * 2, size * 2);
+    else { CX.beginPath(); CX.arc(x, y, size, 0, 7); CX.fill(); }
+    CX.globalAlpha = 1;
+  }
+  if (sel) {
+    const [x, y] = px(sel);
+    CX.strokeStyle = '#58a6ff'; CX.lineWidth = 2 * s;
+    CX.beginPath(); CX.arc(x, y, 11 * s, 0, 7); CX.stroke();
+  }
+}
+
+function nearest(ev) {
+  const b = CV.getBoundingClientRect(), s = view.s;
+  const mx = (ev.clientX - b.left) * s, my = (ev.clientY - b.top) * s;
+  let best = null, bd = 18 * s;
+  for (const r of D.rows) {
+    const [x, y] = px(r), d = Math.hypot(x - mx, y - my);
+    if (d < bd) { bd = d; best = r; }
+  }
+  return best;
+}
+
+function hover(ev) {
+  const h = nearest(ev), t = $('tip');
+  if (!h) { t.style.display = 'none'; return; }
+  const b = CV.getBoundingClientRect();
+  t.style.display = 'block';
+  t.style.left = (ev.clientX - b.left + 14) + 'px';
+  t.style.top = (ev.clientY - b.top + 10) + 'px';
+  t.innerHTML = `<b>${esc(h.n)}</b>` + (h.o !== null
+    ? ` &middot; ${h.o.toFixed(2)}${h.k === 'Inflow' ? ' m³/s' : ' m'}` : ' &middot; no reading');
+}
+
+function pick(r) {
+  sel = r; draw();
+  const u = r.k === 'Inflow' ? ' m³/s' : ' m';
+  const line = (k, v) => v === null || v === undefined ? '' :
+    `<div class="row"><span>${k}</span><b>${(+v).toFixed(2)}${u}</b></div>`;
+  const st = r.st === null ? ['not reporting', 'var(--dim)']
+    : [['normal', 'above warning', 'ABOVE DANGER'][r.st], COL[r.st]];
+  $('detail').innerHTML =
+    `<h4>${esc(r.n)} <span style="float:right;font-size:11px;color:${st[1]}">${st[0]}</span></h4>`
+    + `<div class="note" style="margin:0 0 6px">${esc(r.c)} &middot; ${r.k} &middot; ${r.la}, ${r.lo}</div>`
+    + line('observed', r.o) + line('warning', r.w) + line('danger', r.d)
+    + line('highest ever', r.h)
+    + (r.t ? `<div class="note">reading at ${esc(r.t.replace('T', ' '))}</div>` : '')
+    + (r.f.length ? '<div class="fc">CWC forecast<br>' + r.f.map(f =>
+        `${esc(f[0])} &nbsp;<b>${(+f[1]).toFixed(2)}</b> ${esc(f[2] || '')}`).join('<br>')
+        + '</div>' : '<div class="fc">no forecast issued for this station</div>');
+}
+function esc(s) { return String(s === null || s === undefined ? '' : s)
+  .replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+</script>

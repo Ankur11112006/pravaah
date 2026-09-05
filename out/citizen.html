@@ -1,0 +1,164 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRAVAAH Citizen</title>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161c24; --line:#242e3a; --ink:#e9eef4; --dim:#8e9bab;
+    --ok:#3fb950; --warn:#d29922; --bad:#f85149; --acc:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#05080c;color:var(--ink);display:flex;
+       justify-content:center;padding:18px 12px 40px;
+       font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .phone{width:100%;max-width:400px;background:var(--bg);border:1px solid var(--line);
+         border-radius:22px;overflow:hidden;box-shadow:0 20px 60px #0009}
+  header{padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:15px;letter-spacing:.3px}
+  h1 span{color:var(--dim);font-weight:400}
+  select{width:100%;margin-top:10px;background:var(--card);color:var(--ink);
+         border:1px solid var(--line);border-radius:9px;padding:10px 11px;
+         font:inherit;font-size:15px}
+  main{padding:14px 16px 20px}
+  .band{border-radius:12px;padding:13px 14px;margin-bottom:13px;font-weight:600}
+  .band.go{background:#3a1d1b;border:1px solid #6b2a2a;color:#ffb4ae}
+  .band.mid{background:#2c2519;border:1px solid #6b5326;color:#f0cd7a}
+  .band.ok{background:#12291a;border:1px solid #2a6b38;color:#8ee79c}
+  .band small{display:block;font-weight:400;color:var(--dim);margin-top:4px;font-size:12.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:13px 14px;margin-bottom:12px}
+  .card h3{margin:0 0 8px;font-size:11px;letter-spacing:.8px;text-transform:uppercase;
+           color:var(--dim);font-weight:600}
+  .big{font-size:20px;font-weight:600;line-height:1.3}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;
+       border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .row:last-child{border-bottom:0}
+  .row span{color:var(--dim)}
+  .note{color:var(--dim);font-size:12.5px;line-height:1.6}
+  .mode{display:flex;gap:6px;margin:9px 0 4px;flex-wrap:wrap}
+  .mode div{flex:1;min-width:66px;text-align:center;border-radius:9px;padding:8px 4px;
+            font-size:11px;border:1px solid var(--line);background:#0f151d;color:var(--dim)}
+  .mode div.on{color:var(--ink);font-weight:600}
+  .mode div b{display:block;font-size:16px;margin-bottom:2px}
+  .road{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .road:last-child{border-bottom:0}
+  .road b{color:var(--ink)} .road span{color:var(--dim);font-size:12px}
+  .sms{background:#0f151d;border:1px dashed var(--line);border-radius:10px;padding:11px;
+       font-size:13.5px;line-height:1.6}
+  footer{padding:12px 16px 16px;border-top:1px solid var(--line);color:var(--dim);
+         font-size:11.5px;line-height:1.6}
+  button{width:100%;background:#1c2530;color:var(--ink);border:1px solid var(--line);
+         border-radius:10px;padding:11px;font:inherit;cursor:pointer;margin-top:8px}
+  button:active{background:#243040}
+</style>
+
+<div class="phone">
+  <header>
+    <h1>PRAVAAH <span id="ev"></span></h1>
+    <select id="pick"></select>
+  </header>
+  <main id="body"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let D = null;
+
+fetch('patna_citizen_data.json').then(r => r.json()).then(d => { D = d; boot(); })
+  .catch(e => { $('body').innerHTML =
+    '<div class="card" style="color:#f85149">' + esc(e.message) + '</div>'; });
+
+function boot() {
+  $('ev').textContent = '· ' + D.event + ', ' + D.peak;
+  D.units.sort((a, b) => b.people - a.people);
+  $('pick').innerHTML = D.units.map((u, i) =>
+    `<option value="${i}">${esc(u.place)} · ${fmt(u.people)} people</option>`).join('');
+  // remember the reader's own area between visits; this is the one thing a
+  // citizen page should not ask twice
+  let start = 0;
+  try {
+    const saved = localStorage.getItem('pravaah.place');
+    const k = D.units.findIndex(u => u.place === saved);
+    if (k >= 0) start = k;
+  } catch (e) {}
+  $('pick').value = start;
+  $('pick').onchange = () => show(+$('pick').value);
+  $('foot').innerHTML =
+    'Built ' + esc(D.built) + '. Depth is what the model gives for your area, not for '
+    + 'your doorstep. Shelter capacity is measured from roof area at the national '
+    + 'minimum of 3.5 sq m per person. If the water is already at your door, do not '
+    + 'wait for a page: call <b>1070</b> or <b>112</b>.';
+  show(start);
+}
+
+function show(i) {
+  const u = D.units[i];
+  try { localStorage.setItem('pravaah.place', u.place); } catch (e) {}
+  const md = u.med, mx = u.mx;
+  const sev = md >= 1 ? 'go' : md >= 0.3 ? 'mid' : 'ok';
+  const head = md >= 1
+    ? 'Leave now. Water here reaches ' + md.toFixed(1) + ' m.'
+    : md >= 0.3
+      ? 'Get ready to leave. Water here reaches ' + md.toFixed(1) + ' m.'
+      : 'Stay alert. Water here is shallow, ' + md.toFixed(2) + ' m typical.';
+
+  const modes = D.modes.map(([lim, name]) => {
+    const on = md < lim;
+    const label = {car: 'Car', bike: 'Two-wheeler', foot: 'On foot', boat: 'Boat only'}[name];
+    const icon = {car: '\u{1F697}', bike: '\u{1F6F5}', foot: '\u{1F6B6}', boat: '\u{1F6F6}'}[name];
+    return `<div class="${on ? 'on' : ''}"><b>${icon}</b>${label}${on ? '' : ' ×'}</div>`;
+  }).join('');
+
+  const nearRoads = D.roads
+    .map(r => ({...r, d: Math.hypot(r.lat - (u.lat ?? r.lat), r.lon - (u.lon ?? r.lon))}))
+    .sort((a, b) => a.d - b.d).slice(0, 3);
+
+  $('body').innerHTML =
+    `<div class="band ${sev}">${esc(head)}<small>Deepest point in ${esc(u.place)}: ${mx.toFixed(1)} m.
+       ${fmt(u.people)} people and ${fmt(u.buildings)} buildings are in the wet area.</small></div>`
+
+    + (u.stranded > 0
+      ? `<div class="band go">No road reaches ${fmt(u.stranded)} people here at any water level.
+         <small>If that is you, a vehicle is not coming. Ask for a boat on 1070 and say
+         you are cut off, not just flooded.</small></div>` : '')
+
+    + `<div class="card"><h3>Where you go</h3>`
+    + (u.shelter
+      ? `<div class="big">${esc(u.shelter)}</div>
+         <div class="note">${u.km !== null ? u.km + ' km away' : 'distance not computed'}
+         ${u.slat ? ' · ' + u.slat.toFixed(4) + 'N ' + u.slon.toFixed(4) + 'E' : ''}</div>
+         ${u.slat ? `<button onclick="nav(${u.slat},${u.slon})">Open in maps</button>` : ''}`
+      : `<div class="note">No shelter was assigned to this area in this plan.</div>`)
+    + `</div>`
+
+    + `<div class="card"><h3>How you can travel</h3><div class="mode">${modes}</div>
+       <div class="note">Based on ${md.toFixed(2)} m of water. A road with deeper water
+       than its mode allows will strand a vehicle, not slow it down.</div></div>`
+
+    + (u.bridge > 0
+      ? `<div class="card"><h3>Warning</h3>
+         <div class="note">${fmt(u.bridge)} people in this area reach their shelter
+         <b>only across a bridge</b>. Nobody has confirmed those bridges are open.
+         Check before you commit to that route.</div></div>` : '')
+
+    + (nearRoads.length
+      ? `<div class="card"><h3>Roads near you</h3>` + nearRoads.map(r =>
+          `<div class="road"><b>${esc(r.name)}</b><br>
+           <span>${esc(r.frm)} → ${esc(r.to)} at ${esc(r.when)} · up to ${r.depth} m</span></div>`
+        ).join('') + `</div>` : '')
+
+    + `<div class="card"><h3>Message that would be broadcast</h3>
+       <div class="sms">${esc(u.place.toUpperCase())}: Flood water expected.
+       Go to ${esc(u.shelter || 'the nearest shelter')} before 8pm.
+       Cannot walk? Reply 1. -DDMA</div></div>`;
+}
+
+function nav(la, lo) {
+  // a plain geo: link so it opens whatever map app the phone actually has,
+  // including offline ones, instead of assuming a specific provider
+  location.href = `geo:${la},${lo}?q=${la},${lo}`;
+}
+const fmt = n => Number(n).toLocaleString('en-IN');
+function esc(s) { return String(s === null || s === undefined ? '' : s)
+  .replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+</script>

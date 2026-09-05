@@ -1,0 +1,101 @@
+[
+ {
+  "name": "MUDGAL",
+  "row": 9,
+  "lat": 19.96215000021707,
+  "lon": 86.233630000034,
+  "kind": "osdma_ncrmpaf",
+  "cap": 1005,
+  "assigned": 1005
+ },
+ {
+  "name": "OSIAN",
+  "row": 19,
+  "lat": 20.022230000217768,
+  "lon": 86.2880800000316,
+  "kind": "osdma_ncrmpaf",
+  "cap": 855,
+  "assigned": 855
+ },
+ {
+  "name": "ALNGGOLA",
+  "row": 23,
+  "lat": 19.96802000021717,
+  "lon": 86.15242000003767,
+  "kind": "osdma_ncrmpaf",
+  "cap": 740,
+  "assigned": 740
+ },
+ {
+  "name": "MADHUPUR",
+  "row": 11,
+  "lat": 19.967320000217114,
+  "lon": 86.30701000003071,
+  "kind": "osdma_ncrmp",
+  "cap": 504,
+  "assigned": 504
+ },
+ {
+  "name": "TALDA",
+  "row": 21,
+  "lat": 20.032900000217904,
+  "lon": 86.25195000003316,
+  "kind": "osdma_mcs",
+  "cap": 421,
+  "assigned": 421
+ },
+ {
+  "name": "KARANGA",
+  "row": 3,
+  "lat": 20.09806000021873,
+  "lon": 86.13725000003825,
+  "kind": "osdma_mfscmrf",
+  "cap": 390,
+  "assigned": 390
+ },
+ {
+  "name": "Gopikantapur High School",
+  "row": 0,
+  "lat": 20.017574360083817,
+  "lon": 86.15466129313147,
+  "kind": "school",
+  "cap": 249,
+  "assigned": 249
+ },
+ {
+  "name": "NAGAR",
+  "row": 15,
+  "lat": 19.99865000021748,
+  "lon": 86.30674000003079,
+  "kind": "osdma_ircs",
+  "cap": 240,
+  "assigned": 240
+ },
+ {
+  "name": "KUNDESHWAR",
+  "row": 12,
+  "lat": 19.97062000021717,
+  "lon": 86.20842000003512,
+  "kind": "osdma_ncrmpaf",
+  "cap": 199,
+  "assigned": 199
+ },
+ {
+  "name": "EKBERUAN",
+  "row": 4,
+  "lat": 20.198440000219925,
+  "lon": 86.13204000003844,
+  "kind": "osdma_mcscmrf",
+  "cap": 102,
+  "assigned": 102
+ },
+ {
+  "name": "Dhanuharbelari",
+  "row": 5,
+  "lat": 19.98955000021736,
+  "lon": 86.3777300000276,
+  "kind": "osdma_ncrmp",
+  "cap": 61,
+  "assigned": 61
+ }
+]

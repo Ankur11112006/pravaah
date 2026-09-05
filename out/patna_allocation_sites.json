@@ -1,0 +1,497 @@
+[
+ {
+  "name": "Chanakya National Law University",
+  "row": 51,
+  "lat": 25.593931574828293,
+  "lon": 85.13333741361805,
+  "kind": "university",
+  "cap": 6189,
+  "assigned": 6189
+ },
+ {
+  "name": "Notre Dame Academy",
+  "row": 44,
+  "lat": 25.634330436908307,
+  "lon": 85.10872702980672,
+  "kind": "school",
+  "cap": 4048,
+  "assigned": 4048
+ },
+ {
+  "name": "Loyola High School",
+  "row": 45,
+  "lat": 25.63537396747675,
+  "lon": 85.10819208347695,
+  "kind": "school",
+  "cap": 3816,
+  "assigned": 3816
+ },
+ {
+  "name": "NIFT Patna",
+  "row": 53,
+  "lat": 25.59448347944308,
+  "lon": 85.1356852456926,
+  "kind": "university",
+  "cap": 3296,
+  "assigned": 3296
+ },
+ {
+  "name": "Aryabhatta Knowledge University",
+  "row": 50,
+  "lat": 25.59237536970895,
+  "lon": 85.13506501585496,
+  "kind": "university",
+  "cap": 3228,
+  "assigned": 3228
+ },
+ {
+  "name": "Chandragupt Institute of Management Patna",
+  "row": 49,
+  "lat": 25.588102556387792,
+  "lon": 85.1317561291855,
+  "kind": "college",
+  "cap": 2820,
+  "assigned": 2820
+ },
+ {
+  "name": "Institute of Hotel Management Catering Technology and Applied Nutrition",
+  "row": 82,
+  "lat": 25.69860671332121,
+  "lon": 85.22514132109448,
+  "kind": "college",
+  "cap": 2170,
+  "assigned": 2170
+ },
+ {
+  "name": "St Xavier's School, Patna",
+  "row": 73,
+  "lat": 25.61933993856794,
+  "lon": 85.14069176023533,
+  "kind": "school",
+  "cap": 1887,
+  "assigned": 1887
+ },
+ {
+  "name": "Keshav Vidya Mandir",
+  "row": 66,
+  "lat": 25.59661509206487,
+  "lon": 85.18017414867239,
+  "kind": "school",
+  "cap": 1713,
+  "assigned": 1713
+ },
+ {
+  "name": "\u0926\u0930\u092d\u0902\u0917\u093e \u0939\u093e\u0909\u0938",
+  "row": 74,
+  "lat": 25.621619645699496,
+  "lon": 85.164412210771,
+  "kind": "university",
+  "cap": 1244,
+  "assigned": 1244
+ },
+ {
+  "name": "Litera Valley Zee School",
+  "row": 65,
+  "lat": 25.59523641249428,
+  "lon": 85.17987496912387,
+  "kind": "school",
+  "cap": 1239,
+  "assigned": 1239
+ },
+ {
+  "name": "Indian Public School, Hajipur",
+  "row": 81,
+  "lat": 25.693102244122752,
+  "lon": 85.2274633734124,
+  "kind": "school",
+  "cap": 1167,
+  "assigned": 1167
+ },
+ {
+  "name": "university at 25.6289N 85.1025E",
+  "row": 24,
+  "lat": 25.628947334775688,
+  "lon": 85.10249120221266,
+  "kind": "university",
+  "cap": 1075,
+  "assigned": 1075
+ },
+ {
+  "name": "Nalanda medical College",
+  "row": 70,
+  "lat": 25.600239558096437,
+  "lon": 85.17400024017049,
+  "kind": "college",
+  "cap": 1040,
+  "assigned": 1040
+ },
+ {
+  "name": "Bhagwat Milan Mandir",
+  "row": 64,
+  "lat": 25.59366853032205,
+  "lon": 85.17955827850929,
+  "kind": "community_centre",
+  "cap": 994,
+  "assigned": 994
+ },
+ {
+  "name": "DPS",
+  "row": 46,
+  "lat": 25.63609097269151,
+  "lon": 85.10724007904953,
+  "kind": "school",
+  "cap": 986,
+  "assigned": 986
+ },
+ {
+  "name": "Maulana Mazharul Haque Arabic and Persian University",
+  "row": 47,
+  "lat": 25.586247242851407,
+  "lon": 85.1330760144332,
+  "kind": "university",
+  "cap": 944,
+  "assigned": 944
+ },
+ {
+  "name": "university at 25.6289N 85.1032E",
+  "row": 38,
+  "lat": 25.628873818601104,
+  "lon": 85.10319473620729,
+  "kind": "university",
+  "cap": 798,
+  "assigned": 798
+ },
+ {
+  "name": "Bankipore Girl's High School",
+  "row": 57,
+  "lat": 25.62140932747265,
+  "lon": 85.13984595165971,
+  "kind": "school",
+  "cap": 768,
+  "assigned": 768
+ },
+ {
+  "name": "school at 25.5933N 85.2269E",
+  "row": 62,
+  "lat": 25.59334654820173,
+  "lon": 85.22689291881636,
+  "kind": "school",
+  "cap": 675,
+  "assigned": 675
+ },
+ {
+  "name": "Patna Women's College",
+  "row": 55,
+  "lat": 25.61134287913171,
+  "lon": 85.1245688760683,
+  "kind": "college",
+  "cap": 9072,
+  "assigned": 644
+ },
+ {
+  "name": "Madarsa Sulemania",
+  "row": 69,
+  "lat": 25.600235059844724,
+  "lon": 85.21060726016827,
+  "kind": "school",
+  "cap": 562,
+  "assigned": 562
+ },
+ {
+  "name": "school at 25.6000N 85.2059E",
+  "row": 68,
+  "lat": 25.59997325290013,
+  "lon": 85.20591243305998,
+  "kind": "school",
+  "cap": 530,
+  "assigned": 530
+ },
+ {
+  "name": "IGNOU Regional Centre",
+  "row": 48,
+  "lat": 25.586425691006475,
+  "lon": 85.1313441991301,
+  "kind": "university",
+  "cap": 493,
+  "assigned": 493
+ },
+ {
+  "name": "Astipur Middle School",
+  "row": 87,
+  "lat": 25.74287855443446,
+  "lon": 85.2002577117125,
+  "kind": "school",
+  "cap": 446,
+  "assigned": 446
+ },
+ {
+  "name": "Sukhdev Mukhlal Intermediate College",
+  "row": 75,
+  "lat": 25.676908828522045,
+  "lon": 85.22518533022617,
+  "kind": "college",
+  "cap": 386,
+  "assigned": 386
+ },
+ {
+  "name": "Balika school,khagaul",
+  "row": 3,
+  "lat": 25.580257283701386,
+  "lon": 85.04555091757065,
+  "kind": "school",
+  "cap": 1139,
+  "assigned": 365
+ },
+ {
+  "name": "Rajapakar High School",
+  "row": 83,
+  "lat": 25.73768667692324,
+  "lon": 85.34232281828936,
+  "kind": "school",
+  "cap": 337,
+  "assigned": 337
+ },
+ {
+  "name": "St. John's Residential Public School",
+  "row": 58,
+  "lat": 25.53187335589866,
+  "lon": 85.17872537712498,
+  "kind": "school",
+  "cap": 315,
+  "assigned": 315
+ },
+ {
+  "name": "Govt. School",
+  "row": 79,
+  "lat": 25.691137849920576,
+  "lon": 85.21374812274077,
+  "kind": "school",
+  "cap": 261,
+  "assigned": 261
+ },
+ {
+  "name": "Govt. Primary School",
+  "row": 78,
+  "lat": 25.69040990369217,
+  "lon": 85.22307012765798,
+  "kind": "school",
+  "cap": 258,
+  "assigned": 258
+ },
+ {
+  "name": "St. Paul's School",
+  "row": 56,
+  "lat": 25.62078549566935,
+  "lon": 85.1250357416151,
+  "kind": "school",
+  "cap": 710,
+  "assigned": 258
+ },
+ {
+  "name": "university at 25.6294N 85.1032E",
+  "row": 41,
+  "lat": 25.62937965281072,
+  "lon": 85.10321486817286,
+  "kind": "university",
+  "cap": 249,
+  "assigned": 249
+ },
+ {
+  "name": "Rahmat Public School",
+  "row": 67,
+  "lat": 25.599532708389415,
+  "lon": 85.20641331160303,
+  "kind": "school",
+  "cap": 231,
+  "assigned": 231
+ },
+ {
+  "name": "civic at 25.6918N 85.2125E",
+  "row": 80,
+  "lat": 25.69178039999999,
+  "lon": 85.2124856,
+  "kind": "civic",
+  "cap": 228,
+  "assigned": 228
+ },
+ {
+  "name": "university at 25.6295N 85.1021E",
+  "row": 26,
+  "lat": 25.629513487270124,
+  "lon": 85.10205592147345,
+  "kind": "university",
+  "cap": 204,
+  "assigned": 204
+ },
+ {
+  "name": "Kaushiki School",
+  "row": 71,
+  "lat": 25.60516413494682,
+  "lon": 85.17418174009343,
+  "kind": "school",
+  "cap": 204,
+  "assigned": 204
+ },
+ {
+  "name": "st.mary school",
+  "row": 60,
+  "lat": 25.58560927148784,
+  "lon": 85.14997045727345,
+  "kind": "school",
+  "cap": 194,
+  "assigned": 194
+ },
+ {
+  "name": "university at 25.6276N 85.1029E",
+  "row": 33,
+  "lat": 25.62757770176237,
+  "lon": 85.10292242736685,
+  "kind": "university",
+  "cap": 189,
+  "assigned": 189
+ },
+ {
+  "name": "High School",
+  "row": 29,
+  "lat": 25.63818671596058,
+  "lon": 85.04565706025068,
+  "kind": "school",
+  "cap": 1025,
+  "assigned": 154
+ },
+ {
+  "name": "Sindhu Public School",
+  "row": 63,
+  "lat": 25.59320487283756,
+  "lon": 85.17409896462016,
+  "kind": "school",
+  "cap": 149,
+  "assigned": 149
+ },
+ {
+  "name": "community hall",
+  "row": 72,
+  "lat": 25.60622306970134,
+  "lon": 85.14217574119736,
+  "kind": "community_centre",
+  "cap": 147,
+  "assigned": 147
+ },
+ {
+  "name": "Edupark",
+  "row": 76,
+  "lat": 25.68863369175932,
+  "lon": 85.22331889035598,
+  "kind": "school",
+  "cap": 135,
+  "assigned": 135
+ },
+ {
+  "name": "Rai Virendra Singh Mahavidyalaya",
+  "row": 89,
+  "lat": 25.74426123291054,
+  "lon": 85.25093809656757,
+  "kind": "college",
+  "cap": 117,
+  "assigned": 117
+ },
+ {
+  "name": "RPS Public School",
+  "row": 59,
+  "lat": 25.57733621922285,
+  "lon": 85.18907008189532,
+  "kind": "school",
+  "cap": 74,
+  "assigned": 74
+ },
+ {
+  "name": "S.V.D school",
+  "row": 61,
+  "lat": 25.59094299011965,
+  "lon": 85.16317301389921,
+  "kind": "school",
+  "cap": 65,
+  "assigned": 65
+ },
+ {
+  "name": "Astipur Elementary School Urdu",
+  "row": 86,
+  "lat": 25.74272028662957,
+  "lon": 85.2033038334113,
+  "kind": "school",
+  "cap": 41,
+  "assigned": 41
+ },
+ {
+  "name": "S.K.PALACE",
+  "row": 15,
+  "lat": 25.614932580531416,
+  "lon": 85.05354619465004,
+  "kind": "community_centre",
+  "cap": 1382,
+  "assigned": 27
+ },
+ {
+  "name": "Minapur Rai High School",
+  "row": 84,
+  "lat": 25.742185447309467,
+  "lon": 85.19960930108263,
+  "kind": "school",
+  "cap": 24,
+  "assigned": 24
+ },
+ {
+  "name": "Learning temple School",
+  "row": 52,
+  "lat": 25.594053843609924,
+  "lon": 85.12948612753317,
+  "kind": "school",
+  "cap": 133,
+  "assigned": 23
+ },
+ {
+  "name": "K V School Danapur patna bihar",
+  "row": 28,
+  "lat": 25.63102034326399,
+  "lon": 85.04201695337771,
+  "kind": "school",
+  "cap": 2680,
+  "assigned": 22
+ },
+ {
+  "name": "middle school(Dariyapur)",
+  "row": 2,
+  "lat": 25.573178221852203,
+  "lon": 84.9996047562854,
+  "kind": "school",
+  "cap": 6,
+  "assigned": 6
+ },
+ {
+  "name": "Railway school,khagaul",
+  "row": 4,
+  "lat": 25.58103187281845,
+  "lon": 85.04801623831,
+  "kind": "school",
+  "cap": 382,
+  "assigned": 3
+ },
+ {
+  "name": "T-Point Resort",
+  "row": 23,
+  "lat": 25.628271969031253,
+  "lon": 85.05552087908896,
+  "kind": "community_centre",
+  "cap": 531,
+  "assigned": 3
+ },
+ {
+  "name": "Middle school manpura",
+  "row": 1,
+  "lat": 25.572142828165696,
+  "lon": 84.99862222172106,
+  "kind": "school",
+  "cap": 6,
+  "assigned": 2
+ }
+]

@@ -1,0 +1,104 @@
+[
+ {
+  "place": "Hajipur",
+  "shelter": "NIFT Patna",
+  "people": 11152,
+  "shelters_used": 22
+ },
+ {
+  "place": "Biddupur",
+  "shelter": "Keshav Vidya Mandir",
+  "people": 10239,
+  "shelters_used": 20
+ },
+ {
+  "place": "Sonepur",
+  "shelter": "university at 25.6295N 85.1021E",
+  "people": 57,
+  "shelters_used": 3
+ },
+ {
+  "place": "Dighwara",
+  "shelter": "High School",
+  "people": 5,
+  "shelters_used": 1
+ },
+ {
+  "place": "Bidupur",
+  "shelter": "Indian Public School, Hajipur",
+  "people": 1121,
+  "shelters_used": 22
+ },
+ {
+  "place": "Danapur",
+  "shelter": "High School",
+  "people": 191,
+  "shelters_used": 6
+ },
+ {
+  "place": "Neora",
+  "shelter": "middle school(Dariyapur)",
+  "people": 5,
+  "shelters_used": 1
+ },
+ {
+  "place": "Digha",
+  "shelter": "Notre Dame Academy",
+  "people": 116,
+  "shelters_used": 6
+ },
+ {
+  "place": "Hakimganj",
+  "shelter": "Chanakya National Law University",
+  "people": 700,
+  "shelters_used": 8
+ },
+ {
+  "place": "Patna",
+  "shelter": "St. Paul's School",
+  "people": 243,
+  "shelters_used": 3
+ },
+ {
+  "place": "Rajendra Nagar",
+  "shelter": "Patna Women's College",
+  "people": 491,
+  "shelters_used": 6
+ },
+ {
+  "place": "Mehdiganj",
+  "shelter": "Notre Dame Academy",
+  "people": 1723,
+  "shelters_used": 9
+ },
+ {
+  "place": "Fatuha",
+  "shelter": "Loyola High School",
+  "people": 15828,
+  "shelters_used": 19
+ },
+ {
+  "place": "Ranipur",
+  "shelter": "Chanakya National Law University",
+  "people": 3502,
+  "shelters_used": 10
+ },
+ {
+  "place": "Sampatchak",
+  "shelter": "Chandragupt Institute of Management Patna",
+  "people": 1108,
+  "shelters_used": 10
+ },
+ {
+  "place": "Punpun",
+  "shelter": "Chandragupt Institute of Management Patna",
+  "people": 905,
+  "shelters_used": 4
+ },
+ {
+  "place": "Naubatpur",
+  "shelter": "Balika school,khagaul",
+  "people": 57,
+  "shelters_used": 1
+ }
+]

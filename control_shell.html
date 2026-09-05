@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRAVAAH Control</title>
+<style>
+:root{
+  --bg:#0b0f14; --panel:#131922; --sunk:#0e131a; --line:#212b38; --line2:#2c3846;
+  --ink:#e8eef5; --dim:#8d9bab; --faint:#5b6875;
+  --car:#3fb950; --bike:#d29922; --foot:#f0883e; --boat:#f85149;
+  --bridge:#a371f7; --water:#1f6feb; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+  --silent:#4a5561;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden;
+     font:13px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+      font-variant-numeric:tabular-nums}
+#app{position:fixed;inset:0;display:grid;grid-template-columns:190px 1fr 348px;
+     grid-template-rows:48px 1fr}
+@media(max-width:1100px){#app{grid-template-columns:170px 1fr 300px}}
+
+.topbar{grid-column:1/-1;display:flex;align-items:center;background:var(--sunk);
+        border-bottom:1px solid var(--line)}
+.brand{width:190px;display:flex;align-items:center;gap:7px;padding:0 15px;
+       border-right:1px solid var(--line);height:100%}
+.brand b{font-size:15px;letter-spacing:1.3px}
+.brand span{font-size:9.5px;color:var(--faint);letter-spacing:.6px}
+@media(max-width:1100px){.brand{width:170px}}
+.topmid{flex:1;display:flex;align-items:center;gap:14px;padding:0 16px;min-width:0}
+.dist{font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:4px;
+      background:var(--sunk);color:var(--ink);font-family:inherit;cursor:pointer}
+.chip{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:3px 11px;
+      border-radius:3px;border:1px solid;white-space:nowrap}
+.chip.danger{border-color:var(--bad);color:var(--bad);background:rgba(248,81,73,.09)}
+.chip.calm{border-color:var(--line2);color:var(--dim)}
+.chip.warn{border-color:var(--warn);color:var(--warn);background:rgba(210,153,34,.09)}
+.chip.danger b,.chip.warn b{font-variant-numeric:tabular-nums}
+.chip b{font-size:13px}
+.topmeta{margin-left:auto;display:flex;gap:17px;align-items:center;padding-right:15px;
+         font-size:10.5px;color:var(--faint);white-space:nowrap}
+.topmeta b{display:block;color:var(--dim);font-size:12.5px}
+.conn{display:flex;align-items:center;gap:6px;font-size:11px}
+.conn i{width:7px;height:7px;border-radius:50%;background:var(--silent)}
+.conn.live i{background:var(--ok)} .conn.live{color:var(--ok)}
+.conn.off i{background:var(--warn)} .conn.off{color:var(--warn)}
+
+nav{background:var(--sunk);border-right:1px solid var(--line);padding:9px 0;overflow:auto}
+.nav{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 14px;
+     border:0;background:none;color:var(--dim);cursor:pointer;font:inherit;font-size:13px;
+     border-left:2px solid transparent}
+.nav:hover{color:var(--ink);background:rgba(255,255,255,.02)}
+.nav[aria-current="true"]{color:var(--ink);border-left-color:var(--water);
+     background:rgba(31,111,235,.09)}
+.nav:focus-visible{outline:2px solid var(--water);outline-offset:-2px}
+.nav .ic{width:15px;text-align:center;opacity:.85}
+.nav .ct{margin-left:auto;font-size:10.5px;padding:0 6px;border-radius:8px;
+     border:1px solid var(--line2);color:var(--faint)}
+.nav .ct.bad{border-color:var(--bad);color:var(--bad)}
+.nav .ct.new{border-color:var(--water);color:var(--water)}
+.navsep{margin:11px 14px 7px;font-size:9.5px;letter-spacing:.9px;text-transform:uppercase;
+     color:var(--faint)}
+
+.mapwrap{position:relative;background:#080c11;overflow:hidden}
+#map{display:block;width:100%;height:100%}
+.maptop{position:absolute;top:11px;left:12px;right:12px;display:flex;flex-wrap:wrap;
+        gap:7px;z-index:5}
+.mbtn{font:inherit;font-size:11.5px;padding:4px 10px;border-radius:4px;
+      border:1px solid var(--line2);background:rgba(11,15,20,.86);color:var(--dim);
+      cursor:pointer}
+.mbtn[aria-pressed="true"]{color:var(--ink);border-color:var(--water)}
+.legend{position:absolute;bottom:80px;right:12px;background:rgba(11,15,20,.9);
+        border:1px solid var(--line);border-radius:5px;padding:9px 11px;font-size:11px;
+        color:var(--dim);z-index:6}
+.legend div{display:flex;align-items:center;gap:7px;padding:1.5px 0}
+.legend i{width:15px;height:2.5px;border-radius:2px;display:inline-block}
+.legend .dsh{height:0;border-top:2.5px dashed var(--bridge);width:15px}
+.legend .dot{width:8px;height:8px;border-radius:50%;background:#fff}
+.legend .sdot{width:7px;height:7px;border-radius:50%;display:inline-block}
+#natlegend[hidden]{display:none}
+.maptitle{position:absolute;top:11px;left:12px;z-index:6;font-size:11.5px;
+   color:var(--dim);background:rgba(11,15,20,.86);border:1px solid var(--line2);
+   border-radius:4px;padding:4px 10px}
+.maptitle b{color:var(--ink)}
+.maptitle[hidden]{display:none}
+.timebar{position:absolute;left:0;right:0;bottom:0;
+         background:linear-gradient(transparent,rgba(8,12,17,.94) 26%);
+         padding:26px 16px 13px;z-index:5}
+.timerow{display:flex;align-items:center;gap:13px}
+.timerow input[type=range]{flex:1;accent-color:var(--water)}
+.tstamp{font-size:12.5px;min-width:136px}
+.tlevel{font-size:12.5px;color:var(--dim);white-space:nowrap}
+.tlevel b{color:var(--ink)}
+#nomap{position:absolute;inset:0;display:flex;align-items:center;
+       justify-content:center;padding:30px;z-index:4;text-align:center}
+#nomap[hidden]{display:none}
+#nomap div{max-width:330px;border:1px solid var(--line2);border-radius:7px;
+       background:rgba(19,25,34,.92);padding:16px 18px}
+#nomap b{font-size:13.5px}
+#nomap p{margin:7px 0 0;color:var(--dim);font-size:12px;line-height:1.6}
+.hover{position:absolute;pointer-events:none;background:rgba(11,15,20,.95);
+       border:1px solid var(--line2);border-radius:4px;padding:6px 9px;font-size:11.5px;
+       z-index:9;display:none;max-width:240px}
+
+aside{background:var(--panel);border-left:1px solid var(--line);overflow:auto}
+.rhead{position:sticky;top:0;background:var(--panel);padding:12px 15px 9px;
+       border-bottom:1px solid var(--line);z-index:2}
+.rhead .k{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--faint)}
+.rhead .q{font-size:13.5px;margin-top:2px}
+.sec{padding:13px 15px;border-bottom:1px solid var(--line)}
+.sec h4{margin:0 0 9px;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;
+        color:var(--faint);font-weight:600}
+.kpi{display:flex;flex-wrap:wrap;gap:14px 20px}
+.kpi div b{display:block;font-size:20px;line-height:1.15;
+           font-family:ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.kpi div span{font-size:10.5px;color:var(--dim)}
+.kpi .bad b{color:var(--bad)} .kpi .warn b{color:var(--warn)}
+.kpi .ok b{color:var(--ok)} .kpi .sil b{color:var(--silent)}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{text-align:left;font-size:9.5px;letter-spacing:.7px;text-transform:uppercase;
+   color:var(--faint);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
+td{padding:4.5px 6px;border-bottom:1px solid rgba(33,43,56,.5);vertical-align:top}
+td.n{text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace;
+     font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+.sub{color:var(--faint);font-size:11px;display:block;margin-top:1px}
+.pill{display:inline-block;font-size:10px;padding:0 6px;border-radius:3px;border:1px solid}
+.p-car{color:var(--car);border-color:var(--car)}
+.p-bike{color:var(--bike);border-color:var(--bike)}
+.p-foot{color:var(--foot);border-color:var(--foot)}
+.p-boat{color:var(--boat);border-color:var(--boat)}
+.p-bridge{color:var(--bridge);border-color:var(--bridge)}
+.act{display:flex;align-items:center;gap:9px;padding:7px 0;
+     border-bottom:1px solid rgba(33,43,56,.5)}
+.act .nm{flex:1;font-size:12.5px}
+.act .thr{font-size:10.5px;color:var(--faint);font-family:ui-monospace,Menlo,monospace}
+.go{font-size:9.5px;letter-spacing:.4px;padding:1px 7px;border-radius:3px;
+    border:1px solid var(--ok);color:var(--ok)}
+.nogo{font-size:9.5px;letter-spacing:.4px;padding:1px 7px;border-radius:3px;
+      border:1px solid var(--line2);color:var(--faint)}
+.btn{font:inherit;font-size:12.5px;padding:8px 13px;border-radius:4px;cursor:pointer;
+     border:1px solid var(--line2);background:var(--sunk);color:var(--ink);width:100%}
+.btn+.btn{margin-top:7px}
+.btn.primary{border-color:var(--ok);color:var(--ok)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:default}
+.note{font-size:11.5px;color:var(--dim);margin:9px 0 0;line-height:1.55}
+.note b{color:var(--ink)}
+.warnbox{border:1px solid var(--bridge);border-radius:4px;padding:8px 10px;
+         font-size:11.5px;color:var(--dim);margin-top:9px;line-height:1.55}
+.warnbox b{color:var(--bridge);display:block;font-size:10px;letter-spacing:.7px;
+           text-transform:uppercase;margin-bottom:3px}
+.empty{color:var(--faint);font-size:12px;padding:6px 0}
+dialog{border:1px solid var(--line2);border-radius:8px;background:var(--panel);
+       color:var(--ink);padding:0;max-width:400px;width:92vw}
+dialog::backdrop{background:rgba(3,6,10,.7)}
+.dlg{padding:16px 18px}
+.dlg h3{margin:0 0 4px;font-size:15px}
+.dlg p{margin:0 0 12px;color:var(--dim);font-size:12.5px}
+.dlg select,.dlg input{width:100%;font:inherit;font-size:13px;padding:8px 10px;
+       border-radius:5px;border:1px solid var(--line2);background:var(--sunk);
+       color:var(--ink);margin-bottom:10px}
+/* --- map controls added with the real basemap --- */
+.mapbtns{position:absolute;right:12px;top:11px;display:flex;flex-direction:column;
+         gap:5px;z-index:6}
+.zb{width:30px;height:30px;border-radius:4px;border:1px solid var(--line2);
+    background:rgba(11,15,20,.86);color:var(--ink);font:inherit;font-size:15px;
+    cursor:pointer;line-height:1}
+.zb:hover{border-color:var(--water)}
+.scale{position:absolute;left:12px;bottom:64px;z-index:6;font-size:10px;
+       color:var(--dim);background:rgba(11,15,20,.8);padding:2px 6px;border-radius:3px}
+.scale i{display:block;height:3px;border:1px solid var(--dim);border-top:0}
+.attrib{position:absolute;right:12px;bottom:64px;z-index:6;font-size:9.5px;
+        color:var(--faint);background:rgba(11,15,20,.8);padding:2px 6px;border-radius:3px}
+.tmode{font-size:10.5px;color:var(--faint);white-space:nowrap}
+.tmode b{color:var(--dim)}
+.snapshot{position:absolute;left:0;right:0;bottom:0;padding:26px 16px 13px;z-index:5;
+   background:linear-gradient(transparent,rgba(8,12,17,.94) 26%);font-size:12px;
+   color:var(--dim)}
+.snapshot b{color:var(--ink);font-size:12.5px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand"><b>PRAVAAH</b><span>CONTROL</span></div>
+    <div class="topmid">
+      <select class="dist" id="ev"></select>
+      <div class="chip danger" id="statechip">
+        <span id="stateriver">Ganga at Gandhighat</span>
+        <b class="mono" id="statelvl">48.70 m</b>
+        <span id="statedanger" style="color:var(--faint)">danger 48.60</span>
+      </div>
+    </div>
+    <div class="topmeta">
+      <div class="conn" id="conn"><i></i><span>connecting</span></div>
+      <div>forecast lead<b class="mono" id="mlead">&#8722;</b></div>
+      <div>arithmetic<b class="mono" id="marith">&#8722;</b></div>
+      <div>CWC feed<b class="mono" id="mcwc">&#8722;</b></div>
+    </div>
+  </div>
+
+  <nav id="nav">
+    <div class="navsep">District</div>
+    <button class="nav" aria-current="true" data-v="plan"><span class="ic">&#9673;</span>Situation</button>
+    <button class="nav" data-v="when"><span class="ic">&#9201;</span>Road timeline</button>
+    <button class="nav" data-v="where"><span class="ic">&#9750;</span>Shelters<span class="ct" id="ct-sh"></span></button>
+    <button class="nav" data-v="act"><span class="ic">&#9888;</span>Act</button>
+    <div class="navsep">Incoming</div>
+    <button class="nav" data-v="reports"><span class="ic">&#9993;</span>Citizen reports<span class="ct" id="ct-rep"></span></button>
+    <button class="nav" data-v="help"><span class="ic">&#9873;</span>Help queue<span class="ct" id="ct-help"></span></button>
+    <div class="navsep">India</div>
+    <button class="nav" data-v="watch"><span class="ic">&#9678;</span>Watch<span class="ct" id="ct-nat"></span></button>
+    <button class="nav" data-v="log"><span class="ic">&#9776;</span>Audit log<span class="ct" id="ct-log"></span></button>
+  </nav>
+
+  <div class="mapwrap">
+    <canvas id="map"></canvas>
+    <div class="maptop">
+      <button class="mbtn" data-layer="base" aria-pressed="true">Basemap</button>
+      <button class="mbtn" data-layer="flood" aria-pressed="true">Flood</button>
+      <button class="mbtn" data-layer="roads" aria-pressed="true">Roads</button>
+      <button class="mbtn" data-layer="people" aria-pressed="true">People</button>
+      <button class="mbtn" data-layer="shelters" aria-pressed="true">Shelters</button>
+      <button class="mbtn" data-layer="reports" aria-pressed="true">Reports</button>
+    </div>
+    <div class="mapbtns">
+      <button class="zb" id="zin" title="zoom in">+</button>
+      <button class="zb" id="zout" title="zoom out">&minus;</button>
+      <button class="zb" id="zfit" title="fit the district" style="font-size:12px">&#9635;</button>
+    </div>
+    <div class="legend">
+      <div><i style="background:var(--car)"></i>car passable</div>
+      <div><i style="background:var(--bike)"></i>bike only</div>
+      <div><i style="background:var(--foot)"></i>foot only</div>
+      <div><i style="background:var(--boat)"></i>boat only</div>
+      <div><span class="dsh"></span>bridge, state unknown</div>
+      <div><span class="dot"></span>shelter open, sized by capacity</div>
+      <div><span class="dot" style="width:5px;height:5px;opacity:.45"></span>measured, not opened</div>
+    </div>
+    <div class="legend" id="natlegend" hidden>
+      <div style="font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;
+                  color:var(--faint);padding-bottom:4px">CWC network, live</div>
+      <div><span class="sdot" style="background:#f85149;width:9px;height:9px"></span>above danger, sized by how far</div>
+      <div><span class="sdot" style="background:#d29922"></span>above warning</div>
+      <div><span class="sdot" style="background:#2ea043"></span>normal</div>
+      <div><span class="sdot" style="background:#4a5561"></span>not reporting</div>
+    </div>
+    <div class="scale" id="scale">&#8722;<i></i></div>
+    <div class="attrib">basemap &copy; OpenStreetMap contributors</div>
+    <div class="maptitle" id="maptitle" hidden></div>
+    <div class="hover" id="hov"></div>
+    <div class="timebar" id="timebar"><div class="timerow">
+      <span class="tstamp mono" id="tstamp"></span>
+      <input type="range" id="time" min="0" max="88" value="52" aria-label="forecast time">
+      <span class="tlevel" id="tright"></span>
+    </div>
+    <div class="tmode" id="tmode" style="margin-top:5px"></div></div>
+    <div class="snapshot" id="snapbar" hidden></div>
+  </div>
+
+  <aside><div id="rail"></div></aside>
+</div>
+
+<dialog id="dlg"><form method="dialog" class="dlg" id="dlgf">
+  <h3 id="dlgh"></h3><p id="dlgp"></p>
+  <div id="dlgbody"></div>
+  <button class="btn primary" id="dlgok" value="ok">Confirm</button>
+  <button class="btn" value="cancel">Cancel</button>
+</form></dialog>
+
+<script id="D" type="application/json">__DATA__</script>
+<script>
+(function(){
+"use strict";
+var D = JSON.parse(document.getElementById("D").textContent);
+
+// The API is on the same host that served this page. Opened as a file:// it has
+// no host, so fall back to localhost: a judge double-clicking the file still
+// gets a working screen, just from the cached numbers baked in below.
+var API = (location.protocol === "file:") ? "http://127.0.0.1:8010" : location.origin;
+var EV = "patna";
+
+var TITLES = {patna:"Patna district", delhi:"Delhi", mahanadi:"Mahanadi delta"};
+var CHIP = {
+  patna:    ["Ganga at Gandhighat", "", "danger 48.60", "danger"],
+  delhi:    ["Yamuna, embanked", "one snapshot", "no level can be fitted", "calm"],
+  mahanadi: ["Mahanadi delta", "C-Flood", "depth as published, 3-hourly", "calm"]
+};
+
+/* ---- live state, seeded with what was true when this file was built, so the
+        screen is never empty and never lies about which it is showing ---- */
+var seed = D.seed[EV] || {};
+var L = {
+  live:false, plan:seed.plan, units:seed.units, shelters:seed.shelters,
+  forecast:seed.forecast, reports:[], help:[], decisions:[],
+  national:D.seed.national
+};
+
+/* ============================ map ============================
+   Web Mercator, the same projection the tiles are in, so a road drawn from our
+   own graph lands on the road in the basemap instead of a few pixels off it.
+   The basemap is OpenStreetMap, fetched once by the district server and cached
+   there: no key, no account, and it keeps working when the venue wifi does not.
+============================================================== */
+var cv=document.getElementById("map"), cx=cv.getContext("2d"), W=0,H=0,dpr=1;
+var M=null, bytes=null, level=0, frame=0, layers={base:1,flood:1,roads:1,people:1,
+    shelters:1,reports:1};
+var view={x:0,y:0,z:11};
+var TILE_MIN=3, TILE_MAX=13;   // what the district server keeps cached
+var mapMode="district";        // or "national": the whole CWC network
+var TAU=Math.PI*2;
+
+function lon2wx(lon,z){ return (lon+180)/360*256*Math.pow(2,z); }
+function lat2wy(lat,z){ var s=Math.sin(lat*Math.PI/180);
+  return (0.5 - Math.log((1+s)/(1-s))/(4*Math.PI))*256*Math.pow(2,z); }
+function px(lon){ return W/2 + (lon2wx(lon,view.z)-view.x); }
+function py(lat){ return H/2 + (lat2wy(lat,view.z)-view.y); }
+function unpx(x){ return (view.x + x - W/2)/(256*Math.pow(2,view.z))*360-180; }
+function unpy(y){ var n=Math.PI-TAU*(view.y+y-H/2)/(256*Math.pow(2,view.z));
+  return 180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))); }
+
+// India, roughly. Not a bounding box of the data: a country somebody
+// recognises, so a gauge in Assam is read as being in Assam.
+var INDIA = [67.5, 6.5, 97.5, 36.5];
+
+function fitBox(b, padX, padY){
+  var w0 = lon2wx(b[2],0)-lon2wx(b[0],0), h0 = lat2wy(b[1],0)-lat2wy(b[3],0);
+  view.z = Math.min(Math.log((W-padX)/w0)/Math.LN2, Math.log((H-padY)/h0)/Math.LN2);
+  view.x = (lon2wx(b[0],view.z)+lon2wx(b[2],view.z))/2;
+  view.y = (lat2wy(b[1],view.z)+lat2wy(b[3],view.z))/2;
+}
+function fitIndia(){ fitBox(INDIA, 30, 40); }
+
+function setMapMode(m){
+  if (m === mapMode) return;
+  mapMode = m;
+  var district = m === "district";
+  document.querySelector(".maptop").style.display = district ? "" : "none";
+  document.querySelector(".legend").style.display = district ? "" : "none";
+  document.getElementById("natlegend").hidden = district;
+  var t = document.getElementById("maptitle");
+  t.hidden = district;
+  if (!district) t.innerHTML = "<b>India</b> &middot; every CWC forecast station, "
+    + "coloured by what it is reading now";
+  var many = M && M.hours.length > 1;
+  document.getElementById("timebar").hidden = !district || !many;
+  document.getElementById("snapbar").hidden = !district || many;
+  if (district) fitAOI(); else fitIndia();
+  queue();
+}
+
+function fitAOI(){
+  var a=M.aoi;
+  var w0=lon2wx(a[2],0)-lon2wx(a[0],0), h0=lat2wy(a[1],0)-lat2wy(a[3],0);
+  view.z = Math.min(Math.log((W-20)/w0)/Math.LN2, Math.log((H-70)/h0)/Math.LN2);
+  view.x = (lon2wx(a[0],view.z)+lon2wx(a[2],view.z))/2;
+  view.y = (lat2wy(a[1],view.z)+lat2wy(a[3],view.z))/2;
+}
+function fit(){
+  var r = cv.parentNode.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio||1, 2);
+  W = Math.max(320, r.width); H = Math.max(240, r.height);
+  cv.width = W*dpr; cv.height = H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px";
+  cx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+/* ---- basemap tiles, from our own server, cached in the page ---- */
+var tiles={}, tileTries=0, tileOk=0;
+function tile(z,x,y){
+  var k=z+"/"+x+"/"+y, t=tiles[k];
+  if (t) return t.ok ? t.img : null;
+  var img=new Image();
+  tiles[k]={img:img, ok:false};
+  img.onload=function(){ tiles[k].ok=true; tileOk++; queue(); };
+  img.onerror=function(){ tiles[k].bad=true; };
+  img.crossOrigin="anonymous";
+  img.src = API+"/api/tiles/"+z+"/"+x+"/"+y+".png";
+  tileTries++;
+  return null;
+}
+function drawTiles(){
+  var zt=Math.max(TILE_MIN, Math.min(TILE_MAX, Math.round(view.z)));
+  var scale=Math.pow(2, view.z-zt), span=256*scale, n=Math.pow(2,zt);
+  var left=view.x-W/2, top=view.y-H/2;
+  var x0=Math.floor(left/span), x1=Math.floor((left+W)/span);
+  var y0=Math.floor(top/span),  y1=Math.floor((top+H)/span);
+  // A light OSM tile under a dark control room is unreadable, so it is inverted
+  // to a dark basemap in the canvas rather than shipped as a second tile set.
+  cx.save();
+  cx.filter = "invert(1) hue-rotate(180deg) saturate(.55) brightness(.78) contrast(1.1)";
+  for (var x=x0;x<=x1;x++) for (var y=y0;y<=y1;y++){
+    if (x<0||y<0||x>=n||y>=n) continue;
+    var im=tile(zt,x,y); if(!im) continue;
+    cx.drawImage(im, Math.round(x*span-left), Math.round(y*span-top),
+                 Math.ceil(span)+1, Math.ceil(span)+1);
+  }
+  cx.restore();
+}
+
+/* ---- the flood layer ---- */
+var off=document.createElement("canvas"), octx=null, img=null;
+function initGrid(){
+  var g=M.grid;
+  off.width=g.w; off.height=g.h;
+  octx=off.getContext("2d"); img=octx.createImageData(g.w,g.h);
+  setFrameBytes();
+}
+function b64(s){ return Uint8Array.from(atob(s), function(c){return c.charCodeAt(0);}); }
+function setFrameBytes(){
+  var g=M.grid;
+  bytes = (g.kind==="ground") ? (g._d || (g._d=b64(g.data)))
+        : (g._f || (g._f=[]))[frame] || (g._f[frame]=b64(g.frames[frame]));
+}
+function paintFlood(){
+  var g=M.grid, a=img.data, i, n=g.w*g.h, d, o, t;
+  for (i=0;i<n;i++){
+    o=i*4;
+    if (g.kind==="ground"){
+      if (bytes[i]===255){ a[o+3]=0; continue; }
+      d = level - (g.base + bytes[i]*g.scale);
+    } else {
+      d = bytes[i]*g.scale;
+    }
+    if (d > 0.05){
+      t = Math.min(d/3.5,1);
+      a[o]=20+10*(1-t); a[o+1]=80+50*(1-t); a[o+2]=170+60*(1-t); a[o+3]=110+120*t;
+    } else a[o+3]=0;
+  }
+  octx.putImageData(img,0,0);
+}
+
+/* ---- depth at a point, whichever kind of grid this district has ---- */
+function gidx(lon,lat){
+  var g=M.grid, a=M.aoi;
+  var c=Math.floor((lon-a[0])/(a[2]-a[0])*g.w), r=Math.floor((a[3]-lat)/(a[3]-a[1])*g.h);
+  return (c<0||r<0||c>=g.w||r>=g.h) ? -1 : r*g.w+c;
+}
+function depthAtIdx(i){
+  if (i<0) return 0;
+  var g=M.grid;
+  if (g.kind!=="ground") return bytes[i]*g.scale;
+  return bytes[i]===255 ? 0 : Math.max(0, level-(g.base+bytes[i]*g.scale));
+}
+
+var COL={car:"#3fb950",bike:"#d29922",foot:"#f0883e",boat:"#f85149"};
+function modeOf(d){ var m=M.modes; for(var i=0;i<m.length;i++) if(d<m[i][0]) return m[i][1];
+                    return "boat"; }
+
+var ST_COL = {2:"#f85149", 1:"#d29922", 0:"#2ea043"};
+function drawStations(){
+  var rows = (L.national||{}).stations || [];
+  // Order matters: the silent ones underneath, the ones over their danger mark
+  // on top. A dot that means "we do not know" must never cover one that means
+  // "this river is over its bank".
+  [null, 0, 1, 2].forEach(function(st){
+    for (var i=0;i<rows.length;i++){
+      var r=rows[i];
+      if (r.st !== st || r.la == null) continue;
+      var x=px(r.lo), y=py(r.la);
+      if (x<-20||y<-20||x>W+20||y>H+20) continue;
+      var over = (st===2 && r.d!=null) ? (r.o-r.d) : 0;
+      var rad = st===null ? 1.6 : st===2 ? Math.min(8, 3.2+over*1.4) : st===1 ? 3 : 2.2;
+      cx.beginPath(); cx.arc(x,y,rad,0,TAU);
+      cx.fillStyle = st===null ? "rgba(74,85,97,.75)" : ST_COL[st];
+      cx.globalAlpha = st===0 ? 0.75 : 1;
+      cx.fill(); cx.globalAlpha = 1;
+      if (st===2){
+        cx.beginPath(); cx.arc(x,y,rad+3.5,0,TAU);
+        cx.strokeStyle="rgba(248,81,73,.45)"; cx.lineWidth=1.2; cx.stroke();
+      }
+    }
+  });
+}
+
+function draw(){
+  cx.clearRect(0,0,W,H); cx.fillStyle="#080c11"; cx.fillRect(0,0,W,H);
+  if (mapMode === "national"){
+    if (layers.base) drawTiles();
+    drawStations();
+    drawScale();
+    return;
+  }
+  if (!M) return;
+  if (layers.base) drawTiles();
+  if (layers.flood){
+    paintFlood();
+    var a=M.aoi, x=px(a[0]), y=py(a[3]);
+    cx.imageSmoothingEnabled = true;
+    cx.drawImage(off, x, y, px(a[2])-x, py(a[1])-y);
+  }
+  if (layers.roads){
+    cx.lineCap="round"; cx.lineJoin="round";
+    for (var i=0;i<M.edges.length;i++){
+      var e=M.edges[i], gm=e[0], col, dash=false, w=1.15, d;
+      if (e[2]){ col="#a371f7"; dash=true; w=1.6; }
+      else {
+        d = (e[1]===null) ? depthAtIdx(e[4]) : Math.max(0, level-e[1]);
+        if (e[1]===null && e[4]<0){ col="#6a7686"; }
+        else { col=COL[modeOf(d)]; if(col!==COL.car) w=1.7; }
+      }
+      cx.strokeStyle=col; cx.lineWidth=w; cx.setLineDash(dash?[4,3]:[]);
+      cx.beginPath(); cx.moveTo(px(gm[0][0]),py(gm[0][1]));
+      for (var j=1;j<gm.length;j++) cx.lineTo(px(gm[j][0]),py(gm[j][1]));
+      cx.stroke();
+    }
+    cx.setLineDash([]);
+  }
+  if (layers.people){
+    cx.fillStyle="rgba(240,136,62,.66)";
+    for (var k=0;k<M.people.length;k++){
+      var p=M.people[k];
+      // A pickup point carries the ground elevation at the point itself, which
+      // is finer than the 90 m grid cell it sits in. Use it where it exists and
+      // fall back to the grid only for a district with no level to subtract.
+      var pd = (M.mode==="level" && p[5]!=null) ? (level-p[5]) : depthAtIdx(p[6]);
+      if (pd <= 0.05) continue;
+      cx.beginPath(); cx.arc(px(p[0]),py(p[1]), p[2]>200?3:p[2]>40?2:1.3,0,TAU);
+      cx.fill();
+    }
+  }
+  if (layers.shelters){
+    // Delhi has 929 measured shelters and 10 of them are open. Drawing all 929
+    // the same size buried the district under white dots and hid the ten that
+    // matter. An open site is filled; the rest stay as faint context.
+    var open = L.openSites;
+    for (var s=0;s<M.shelters.length;s++){
+      var sh=M.shelters[s], isOpen = !open || open.has(sh[4]);
+      var rr = isOpen ? Math.max(3,Math.min(9,Math.sqrt(sh[2])/13)) : 1.5;
+      cx.beginPath(); cx.arc(px(sh[0]),py(sh[1]),rr,0,TAU);
+      cx.fillStyle = sh[3] ? "rgba(248,81,73,.9)"
+                   : isOpen ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.30)";
+      cx.fill();
+      if (isOpen){ cx.lineWidth=1; cx.strokeStyle="rgba(8,12,17,.85)"; cx.stroke(); }
+    }
+  }
+  // Citizen reports last, so they sit on top of everything: they are the one
+  // layer the instruments cannot produce.
+  if (layers.reports){
+    var t=(Date.now()%2000)/2000;
+    L.reports.forEach(function(r){
+      if (r.lat==null || r.lon==null) return;
+      var x=px(r.lon), y=py(r.lat);
+      // A report outside the frame is still a report. The app's wards are not
+      // all inside one district's model domain, and a pin quietly drawn off the
+      // canvas is the same as no pin at all: it gets clamped to the edge and
+      // drawn hollow, so the officer knows which way to look.
+      if (x<6 || y<6 || x>W-6 || y>H-6){
+        var ex=Math.max(9,Math.min(W-9,x)), ey=Math.max(9,Math.min(H-9,y));
+        cx.beginPath(); cx.arc(ex,ey,6,0,TAU);
+        cx.strokeStyle="rgba(31,111,235,.95)"; cx.lineWidth=2; cx.stroke();
+        cx.beginPath(); cx.arc(ex,ey,2,0,TAU);
+        cx.fillStyle="rgba(31,111,235,.95)"; cx.fill();
+        return;
+      }
+      cx.beginPath(); cx.arc(x,y,5+3*t,0,TAU);
+      cx.strokeStyle="rgba(31,111,235,"+(0.85*(1-t))+")"; cx.lineWidth=1.6; cx.stroke();
+      cx.beginPath(); cx.arc(x,y,4,0,TAU);
+      cx.fillStyle="#1f6feb"; cx.fill();
+      cx.lineWidth=1; cx.strokeStyle="#e8eef5"; cx.stroke();
+    });
+  }
+  drawScale();
+}
+function drawScale(){
+  // metres per pixel at the centre of the view
+  var mpp = 156543.03392 * Math.cos(unpy(H/2)*Math.PI/180) / Math.pow(2, view.z);
+  var target = 110, m = mpp*target, p = Math.pow(10, Math.floor(Math.log(m)/Math.LN10));
+  var nice = [1,2,5,10].map(function(f){ return f*p; })
+             .filter(function(v){ return v/mpp <= 160; }).pop() || p;
+  var el=document.getElementById("scale");
+  el.firstChild.nodeValue = nice>=1000 ? (nice/1000)+" km" : nice+" m";
+  el.querySelector("i").style.width = Math.round(nice/mpp)+"px";
+}
+var pending=false;
+function queue(){ if(pending) return; pending=true;
+  requestAnimationFrame(function(){ pending=false; draw(); }); }
+
+// only animate while there is something to pulse
+setInterval(function(){ if (layers.reports && L.reports.length) queue(); }, 120);
+
+/* ---- pan and zoom ---- */
+var drag=null;
+cv.addEventListener("mousedown", function(e){ drag={x:e.clientX,y:e.clientY,moved:0};
+  cv.style.cursor="grabbing"; });
+window.addEventListener("mouseup", function(){ drag=null; cv.style.cursor=""; });
+cv.addEventListener("wheel", function(e){
+  e.preventDefault();
+  var r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  var lon=unpx(mx), lat=unpy(my);
+  var z=Math.max(TILE_MIN-1.5, Math.min(TILE_MAX+1.5, view.z - Math.sign(e.deltaY)*0.4));
+  view.z=z; view.x=lon2wx(lon,z)+(W/2-mx); view.y=lat2wy(lat,z)+(H/2-my);
+  queue();
+}, {passive:false});
+function zoomBy(dz){
+  var lon=unpx(W/2), lat=unpy(H/2);
+  view.z=Math.max(TILE_MIN-1.5, Math.min(TILE_MAX+1.5, view.z+dz));
+  view.x=lon2wx(lon,view.z); view.y=lat2wy(lat,view.z); queue();
+}
+document.getElementById("zin").onclick=function(){ zoomBy(1); };
+document.getElementById("zout").onclick=function(){ zoomBy(-1); };
+document.getElementById("zfit").onclick=function(){ fitAOI(); queue(); };
+
+/* ---- hover ---- */
+var hov=document.getElementById("hov");
+cv.addEventListener("mousemove", function(ev){
+  var r=cv.getBoundingClientRect(), mx=ev.clientX-r.left, my=ev.clientY-r.top;
+  if (drag){
+    view.x -= (ev.clientX-drag.x); view.y -= (ev.clientY-drag.y);
+    drag.x=ev.clientX; drag.y=ev.clientY; drag.moved=1;
+    hov.style.display="none"; queue(); return;
+  }
+  if (mapMode === "national"){
+    var rows=(L.national||{}).stations||[], hit=null, bd=9;
+    for (var q=0;q<rows.length;q++){
+      var r0=rows[q]; if (r0.la==null) continue;
+      var d0=Math.hypot(px(r0.lo)-mx, py(r0.la)-my);
+      if (d0 < bd){ bd=d0; hit=r0; }
+    }
+    if (!hit){ hov.style.display="none"; return; }
+    var over0 = (hit.o!=null && hit.d!=null) ? (hit.o-hit.d) : null;
+    hov.innerHTML = "<b>"+esc(hit.n)+"</b><br><span style='color:var(--dim)'>"
+      + (hit.o==null ? "not reporting"
+         : hit.o.toFixed(2)+" m, danger "+(hit.d!=null?Number(hit.d).toFixed(2):"unknown")
+           + (over0!=null ? "<br><span style='color:"
+               + (over0>=0?"var(--bad)":"var(--ok)")+"'>"
+               + (over0>=0?"+":"")+over0.toFixed(2)+" m</span>" : "")
+           + "<br>read "+esc(String(hit.t||"").replace("T"," ")))
+      + "</span>";
+    hov.style.display="block";
+    hov.style.left=Math.min(mx+13, W-252)+"px"; hov.style.top=(my+13)+"px";
+    return;
+  }
+  if (!M) return;
+  var best=null, i, s, e, j;
+  for (i=0;i<L.reports.length;i++){
+    var rp=L.reports[i]; if (rp.lat==null) continue;
+    if (Math.hypot(px(rp.lon)-mx, py(rp.lat)-my) < 9){ best={t:"rep",o:rp}; break; }
+  }
+  if (!best) for (s=0;s<M.shelters.length;s++){
+    var sh=M.shelters[s];
+    if (Math.hypot(px(sh[0])-mx, py(sh[1])-my) < 8){ best={t:"sh",o:sh}; break; }
+  }
+  if (!best) for (e=0;e<M.edges.length;e++){
+    var ed=M.edges[e]; if(!ed[3]) continue;
+    for (j=0;j<ed[0].length;j++){
+      if (Math.hypot(px(ed[0][j][0])-mx, py(ed[0][j][1])-my) < 5){ best={t:"rd",o:ed}; break; }
+    }
+    if (best) break;
+  }
+  if (!best){ hov.style.display="none"; return; }
+  var h;
+  if (best.t==="rep") h = "<b>Citizen report</b><br><span style='color:var(--dim)'>"
+      + esc(best.o.kind) + (best.o.depth_cm!=null ? ", "+best.o.depth_cm+" cm" : "")
+      + (best.o.place ? " &middot; "+esc(best.o.place) : "") + "</span>";
+  else if (best.t==="sh") h = "<b>"+esc(best.o[4])+"</b><br><span style='color:var(--dim)'>capacity "
+      + best.o[2].toLocaleString() + ", measured roof / 3.5 m&sup2;"
+      + (best.o[3] ? "<br><span style='color:var(--bad)'>this site is itself under water</span>" : "")
+      + "</span>";
+  else {
+    var dd = (best.o[1]===null) ? depthAtIdx(best.o[4]) : Math.max(0, level-best.o[1]);
+    h = "<b>"+esc(best.o[3])+"</b><br><span style='color:var(--dim)'>"
+      + (best.o[2] ? "bridge, state unknown"
+         : dd.toFixed(2)+" m of water &middot; "+modeOf(dd)) + "</span>";
+  }
+  hov.innerHTML=h; hov.style.display="block";
+  hov.style.left=Math.min(mx+13, W-252)+"px"; hov.style.top=(my+13)+"px";
+});
+cv.addEventListener("mouseleave", function(){ hov.style.display="none"; });
+
+[].forEach.call(document.querySelectorAll(".mbtn"), function(b){
+  b.onclick=function(){
+    var on = b.getAttribute("aria-pressed")!=="true";
+    b.setAttribute("aria-pressed", on?"true":"false");
+    layers[b.dataset.layer]= on?1:0; queue();
+  };
+});
+
+/* ---- the time control, which is a different thing in each district ---- */
+var slider=document.getElementById("time"), tstamp=document.getElementById("tstamp"),
+    tright=document.getElementById("tright"), tmode=document.getElementById("tmode");
+function stamp(iso){
+  var d=new Date(iso);
+  if (isNaN(d)) return iso;
+  var wd=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
+      mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+  return wd+" "+String(d.getDate()).padStart(2,"0")+" "+mo+" "
+       + String(d.getHours()).padStart(2,"0")+":00";
+}
+function setT(i){
+  if (M.mode==="level"){
+    level = M.levels[i];
+    tstamp.textContent = stamp(M.hours[i]);
+    // The modelled level lives here and only here. It used to also overwrite the
+    // top bar, which then showed 48.74 for the same gauge the panel underneath
+    // was reading at 50.40: one number modelled, one measured, no label on
+    // either. Two numbers for one river is how a meeting quotes the wrong one.
+    tright.innerHTML = 'modelled level <b class="mono">'+level.toFixed(2)+"</b> m";
+  } else {
+    frame = i; setFrameBytes();
+    tstamp.textContent = stamp(M.hours[i]);
+    tright.innerHTML = 'frame <b class="mono">'+(i+1)+"</b> of "+M.hours.length;
+  }
+  queue();
+}
+slider.addEventListener("input", function(){ setT(+slider.value); });
+
+/* ============================ live data ============================ */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,
+  function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function n(v){ return (v==null||isNaN(v)) ? "&#8722;" : Number(v).toLocaleString("en-IN"); }
+function pct(v){ return v==null ? "&#8722;" : Math.round(v*100)+"%"; }
+
+function j(path){
+  var c = new AbortController(); var t=setTimeout(function(){c.abort();}, 5000);
+  return fetch(API+path,{signal:c.signal}).then(function(r){
+    clearTimeout(t); if(!r.ok) throw new Error(r.status); return r.json();
+  });
+}
+function setConn(state, txt){
+  var el=document.getElementById("conn");
+  el.className = "conn " + state;
+  el.lastElementChild.textContent = txt;
+}
+function badge(id, v, cls){
+  var el=document.getElementById(id); if(!el) return;
+  el.textContent = v==null ? "" : v;
+  el.className = "ct" + (cls ? " "+cls : "");
+}
+
+var lastReportIds = new Set();
+function poll(){
+  var ev = EV;
+  Promise.all([
+    j("/api/events/"+ev+"/plan").catch(function(){return null;}),
+    j("/api/events/"+ev+"/units").catch(function(){return null;}),
+    j("/api/reports?event="+ev+"&status=new&limit=50").catch(function(){return null;}),
+    j("/api/help?event="+ev+"&status=waiting&limit=50").catch(function(){return null;}),
+    j("/api/decisions?event="+ev+"&limit=20").catch(function(){return null;}),
+    j("/api/national").catch(function(){return null;}),
+    j("/api/events/"+ev+"/shelters?open_only=1").catch(function(){return null;}),
+    j("/api/events/"+ev+"/forecast").catch(function(){return null;}),
+    // The live river at the centre of this district's own area. Same endpoint
+    // the phone asks, so the control room and the person standing in the water
+    // are reading the same gauge.
+    (M ? j("/api/river?lat=" + ((M.aoi[1]+M.aoi[3])/2).toFixed(4)
+            + "&lon=" + ((M.aoi[0]+M.aoi[2])/2).toFixed(4) + "&count=3")
+       : Promise.resolve(null)).catch(function(){return null;})
+  ]).then(function(r){
+    if (ev !== EV) return;          // the officer switched district mid-flight
+    var any = r.some(function(x){ return x!==null; });
+    L.live = any;
+    setConn(any?"live":"off", any?"live":"cached, no backend");
+    if (r[0]) L.plan = r[0];
+    if (r[1]) L.units = r[1];
+    if (r[2]) L.reports = r[2];
+    if (r[3]) L.help = r[3];
+    if (r[4]) L.decisions = r[4];
+    if (r[5]) L.national = r[5];
+    L.shelterList = r[6] ? r[6].shelters : null;
+    L.shelterTotal = r[6] ? r[6].total : null;
+    L.openSites = L.shelterList
+      ? new Set(L.shelterList.filter(function(x){ return x.assigned; })
+                             .map(function(x){ return x.name.slice(0,34); }))
+      : null;
+    if (r[7]) L.forecast = r[7];
+    if (r[8]) L.river = r[8];
+
+    badge("ct-rep", L.reports.length || null, L.reports.length ? "new" : "");
+    badge("ct-help", L.help.length || null, L.help.length ? "bad" : "");
+    // "of 90" was Patna's number written as a constant. Mahanadi has 27
+    // measured shelters, and printing 11/90 there is exactly the kind of
+    // confidently wrong figure this project exists to not produce.
+    badge("ct-sh", (L.plan && L.shelterTotal)
+      ? (L.plan.shelters_used + "/" + L.shelterTotal) : null);
+    badge("ct-nat", L.national ? L.national.counts.above_danger : null, "bad");
+    badge("ct-log", L.decisions.length || null);
+    topmeta();
+
+    // a brand-new report should be visible without hunting for it
+    var fresh = L.reports.some(function(x){ return !lastReportIds.has(x.id); });
+    L.reports.forEach(function(x){ lastReportIds.add(x.id); });
+    if (fresh || mapMode === "national") queue();
+
+    render();
+  });
+}
+
+function chip(){
+  var g = (L.river && L.river.gauges && L.river.gauges[0]) || null;
+  var el = document.getElementById("statechip");
+  if (!g){
+    var c = CHIP[EV] || [EV, "", "", "calm"];
+    document.getElementById("stateriver").textContent = c[0];
+    document.getElementById("statelvl").textContent = c[1];
+    document.getElementById("statedanger").textContent = c[2];
+    el.className = "chip " + c[3];
+    return;
+  }
+  document.getElementById("stateriver").textContent = g.name;
+  document.getElementById("statlvl_") ? 0 : 0;
+  document.getElementById("statelvl").textContent = g.level.toFixed(2) + " m";
+  document.getElementById("statedanger").textContent =
+    (g.danger != null ? "danger " + Number(g.danger).toFixed(2) : "no danger mark")
+    + "  ·  read " + String(g.at || "").slice(11, 16);
+  el.className = "chip " + (g.status === "above danger" ? "danger"
+                          : g.status === "above warning" ? "warn" : "calm");
+  el.title = "measured at the gauge, not modelled";
+}
+
+function topmeta(){
+  chip();
+  // Both of these used to be typed into the markup. A dashboard that prints a
+  // constant where a measurement belongs is the failure mode this whole project
+  // is about, and it is worse in the top bar than anywhere else on the screen.
+  var f=L.forecast||{}, lead=document.getElementById("mlead");
+  if (f.worst_day){
+    var days = Math.round((new Date(f.worst_day) - new Date())/86400000);
+    lead.textContent = days<=0 ? "today" : days+" day"+(days>1?"s":"");
+    lead.title = "worst day for a 1-in-"+f.return_period_years+"-year exceedance";
+  } else lead.innerHTML="&#8722;";
+  var p=L.plan||{}, ar=document.getElementById("marith");
+  if (p.people_planned!=null){
+    var lhs=(p.placed||0)+(p.beyond_reach||0)+(p.no_route||0);
+    var ok = lhs === p.people_planned;
+    ar.textContent = ok ? "closes" : "off by "+n(p.people_planned-lhs);
+    ar.style.color = ok ? "var(--ok)" : "var(--bad)";
+    ar.title = "placed + beyond_reach + no_route == people_planned";
+  } else ar.innerHTML="&#8722;";
+
+  // How old the live network snapshot is. A dashboard that says "live" without
+  // saying how live is making a claim it has not checked.
+  var cw = document.getElementById("mcwc"), N = L.national || {};
+  if (N.age_seconds != null){
+    var m = Math.round(N.age_seconds / 60);
+    cw.textContent = m < 1 ? "just now" : m < 90 ? m + " min" : Math.round(m/60) + " h";
+    cw.style.color = m > 90 ? "var(--warn)" : "var(--ok)";
+    cw.title = "snapshot taken " + (N.built || "");
+  } else if (N.built){
+    cw.textContent = String(N.built).slice(-5);
+    cw.style.color = "var(--dim)";
+  } else cw.innerHTML = "&#8722;";
+}
+
+/* ============================ right rail ============================ */
+var view_ = "plan";
+var VIEWS = {
+ plan: function(){
+  var p=L.plan||{}, u=L.units||[];
+  // Labelled "modelled", because the measured one is three lines above it and
+  // the two are usually different. An unlabelled number next to a danger mark
+  // reads as a reading.
+  var dm = g && g.danger != null ? Number(g.danger) : null;
+  var head = (M.mode==="level")
+    ? [level.toFixed(2), "m modelled at this hour", dm && level>=dm ? "warn" : ""]
+    // Only a stage-fitted event has a water level. Delhi is one observed
+    // snapshot and Mahanadi is a published depth field, so quoting Patna's
+    // gauge here would be borrowing a number from another river.
+    : [n(p.no_route), "with no road route", "bad"];
+  var g = (L.river && L.river.gauges && L.river.gauges[0]) || null;
+  var gs = g ? (g.status === "above danger" ? "bad"
+              : g.status === "above warning" ? "warn" : "ok") : "";
+  return (g ? sec("The river, measured",
+      kpi([[g.level.toFixed(2), "m at " + esc(g.name), gs],
+           [g.danger != null ? Number(g.danger).toFixed(2) : "−",
+            "m danger mark", ""],
+           [g.km + " km", "from this district", ""]])
+      + '<p class="note">A reading off a CWC gauge, taken at '
+      + esc(String(g.at || "").replace("T", " ")) + '. It is here so the plan '
+      + 'below is read next to the river it is about: the plan is modelled from '
+      + 'a past event, this line is not modelled at all.</p>') : "")
+  + sec("Right now", kpi([
+    [n(p.people_wet), "people in the water", ""],
+    [n(p.people_planned), "in the plan", ""],
+    [n(u.length), "reporting units", ""],
+    head
+  ]) + (p.not_planned ? '<p class="note"><b>'+n(p.not_planned)+'</b> of those are '
+      + 'not in the plan: an isolated cell with no road within reach carries no '
+      + 'pickup point. The arithmetic closes on the second number, never the first.</p>' : ""))
+  + sec("Worst units", tbl(["Unit","People","Median","Max"],
+      u.slice().sort(function(a,b){return b.people-a.people;}).slice(0,7)
+       .map(function(x){ return ["<td>"+esc(x.place)+"</td>",
+         '<td class="n">'+n(x.people)+"</td>",
+         '<td class="n">'+(x.med||0).toFixed(2)+"</td>",
+         '<td class="n">'+(x.mx||0).toFixed(2)+"</td>"]; })))
+  + '<div class="sec"><p class="note">'+ (M.mode==="level"
+      ? 'Drag the time slider: the map is this same plan in space, and the level '
+      + 'in the top bar follows it.'
+      : M.hours.length>1
+      ? 'The slider steps through the published depth frames. Nothing is fitted '
+      + 'and nothing is interpolated between them.'
+      : 'One observed snapshot. There is no time dimension here, so there is no '
+      + 'slider: inventing one would be the worst thing this page could do.')
+  + '</p></div>';
+ },
+ when: function(){
+  var p = L.plan || {}, sv = p.survival;
+  if (!sv) return '<div class="sec"><p class="empty">No road timeline for this '
+    + 'district yet. Run build_plan.py for it.</p></div>';
+  var unit = p.cutoff_unit==="frame" ? "frame" : "metre";
+  var rows = ["car","bike","foot"].filter(function(m){ return sv[m]; })
+    .map(function(m){
+      var x = sv[m];
+      return ['<td><span class="pill p-'+m+'">'+m+'</span></td>',
+              '<td class="n">'+n(x.survives)+'</td>',
+              '<td class="n" style="color:var(--warn)">'+n(x.closes)+'</td>',
+              '<td class="n" style="color:var(--bad)">'+n(x.gone)+'</td>'];
+    });
+  var gone = (sv.car||{}).gone || 0;
+  return sec("By mode", tbl(["Mode","Holds","Closes","Gone"], rows)
+    + '<p class="note"><b>Closes</b> is a deadline you can still work to. '
+    + '<b>Gone</b> was already impassable when the window opened. '
+    + (gone ? 'Merging the two made ' + n(gone) + ' people look like they had time. '
+            : 'Nothing here was already gone when the window opened. ')
+    + 'Cutoffs are in ' + unit + 's.</p>')
+  + '<div class="sec"><div class="warnbox"><b>Bridge dependency</b>'
+  + n(p.bridge_dependent) + ' people reach a shelter only across a bridge. '
+  + 'Terrain cannot say whether it is open. Send someone.</div></div>';
+ },
+ where: function(){
+  var p=L.plan||{};
+  var list = (L.shelterList || L.shelters || []).slice();
+  var total = L.shelterTotal || list.length || "?";
+  // Fullest, not first. The list arrives sorted by how many people were assigned,
+  // but a small site at 98% is the one that overflows, not a large one at 40%.
+  var fullest = list.filter(function(s){ return s.assigned; })
+    .sort(function(a,b){ return (b.use||0)-(a.use||0); }).slice(0,6);
+  return sec("Allocation", kpi([
+    [n(p.placed), "placed", "ok"],
+    [(p.shelters_used||0)+"/"+total, "opened of measured", ""],
+    [n(p.beyond_reach), "beyond 90 min", "bad"],
+    [n(p.no_route), "no road route", "bad"]
+  ]))
+  + sec("Fullest sites", tbl(["Shelter","In","Cap","Use"],
+      fullest.map(function(s){
+        var u=s.use==null?null:Math.round(s.use*100);
+        return ["<td>"+esc(s.name)+"</td>", '<td class="n">'+n(s.assigned)+"</td>",
+                '<td class="n">'+n(s.capacity)+"</td>",
+                '<td class="n" style="color:'+(u>=95?"var(--bad)":u>=80?"var(--warn)":"var(--dim)")
+                  +'">'+(u==null?"&#8722;":u+"%")+"</td>"]; }))
+    + '<p class="note">Capacity is measured roof area / 3.5 m&sup2;, the NDMA '
+    + 'minimum. A school we had assumed held 500 measures 288.</p>');
+ },
+ act: function(){
+  var f = L.forecast || {};
+  if (f.probability == null){
+    return '<div class="sec"><h4>Forecast</h4><p class="empty">No probability. '
+     + (f.error ? esc(f.error) : "The ensemble did not answer.")
+     + '</p><p class="note">The number that belongs here is the share of a live '
+     + '50-member forecast above a published return period. When it cannot be '
+     + 'computed the page says so instead of printing the last one it saw.</p></div>';
+  }
+  var P = f.probability;
+  return '<div class="sec"><h4>Forecast</h4><div style="font-size:12.5px">'
+   + 'Probability for this district <b class="mono" style="font-size:17px">'+pct(P)+'</b></div>'
+   + '<p class="note">Share of '+f.members+' GloFAS ensemble members above the '
+   + f.return_period_years+'-year return period ('+n(f.threshold_m3s)+' m&sup3;/s) at '
+   + 'gauge '+esc(f.gauge)+', '+f.km_away+' km away. Worst day '+esc(f.worst_day)
+   + '. Computed on request, not typed.</p>'
+   + '<div class="warnbox" style="border-color:var(--warn)"><b>Two different clocks</b>'
+   // The moment the map is actually showing, not the first frame of the series:
+   // the box used to name 2019-09-18 while the slider beside it read 01 Oct.
+   + 'This probability is live, for today. The map beside it is showing '
+   + esc(stamp(M.hours[Math.min(+slider.value || 0, M.hours.length - 1)]))
+   + ' ' + esc(String(M.hours[0]).slice(0, 4))
+   + ', a past event kept because it is the one we could check our answer against. '
+   + 'They are not the same flood and must not be read as one.</div>'
+   + spark(f.daily, f)
+   + (f.bands && f.bands.length ? '<h4 style="margin-top:14px">Severity, worst day</h4>'
+      + tbl(["Return period","Discharge","Chance"], f.bands.map(function(b){
+          return ["<td>1 in "+b.years+" years</td>",
+                  '<td class="n">'+n(b.threshold_m3s)+" m&sup3;/s</td>",
+                  '<td class="n" style="color:'+(b.p>=0.5?"var(--bad)":b.p>=0.2?"var(--warn)":"var(--dim)")
+                    +'">'+pct(b.p)+"</td>"]; }))
+      + '<p class="note">A monsoon river clears its 2-year and 5-year marks for '
+      + 'weeks at a time, so those read 100% and say nothing. The severe rows are '
+      + 'the ones worth arguing about.</p>' : "")
+   + '</div>'
+   + '<div class="sec"><h4>Cost-loss ladder</h4>'
+   + (f.actions||[]).map(function(a){ return '<div class="act"><span class="nm">'+esc(a.name)
+      + '</span><span class="thr">&gt;'+Math.round(a.threshold*100)+'%</span>'
+      + (a.authorised ? '<span class="go">AUTHORISED</span>' : '<span class="nogo">not yet</span>')
+      + '</div>'; }).join("")
+   + '<p class="note">An action is authorised when the probability clears its own '
+   + 'cost divided by the loss it avoids. Nobody votes on this line.</p>'
+   + '</div><div class="sec">'
+   + '<button class="btn primary" data-act="approve">Approve what is authorised</button>'
+   + '<button class="btn danger" data-act="override">Override, with reason</button>'
+   + '<p class="note">An override with no reason code is refused by the backend, '
+   + 'not by the form. Every decision is a database row.</p></div>';
+ },
+ reports: function(){
+  if (!L.reports.length) return '<div class="sec"><p class="empty">No new reports. '
+    + 'They arrive here from the citizen app the moment somebody sends one.</p></div>';
+  // The app works anywhere in India now, so a report can arrive from a town
+  // this district has no plan for. Showing it in the same list with no distance
+  // reads as local, which is the one thing it may not be.
+  var cx0 = M ? (M.aoi[0]+M.aoi[2])/2 : null, cy0 = M ? (M.aoi[1]+M.aoi[3])/2 : null;
+  function away(r){
+    if (cx0 == null || r.lat == null || r.lon == null) return null;
+    var dy = (r.lat - cy0) * 110.57;
+    var dx = (r.lon - cx0) * 111.32 * Math.cos(cy0 * Math.PI / 180);
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+  return sec("New, " + L.reports.length, tbl(["From","What",""],
+    L.reports.map(function(r){
+      var km = away(r), far = km != null && km > 60;
+      return ["<td>"+esc(r.place||"unknown")
+              + (km != null ? '<span class="sub" style="color:'
+                  + (far ? "var(--warn)" : "var(--faint)") + '">'
+                  + km.toFixed(0) + " km from this district"
+                  + (far ? ", outside the plan" : "") + "</span>" : "")
+              + '<span class="sub">'
+              + esc((r.note||"").slice(0,46) || r.kind) + "</span></td>",
+              '<td class="n">'+(r.depth_cm!=null ? r.depth_cm+" cm" : "&#8722;")+"</td>",
+              '<td class="n"><button class="btn" style="width:auto;padding:3px 9px;'
+              + 'font-size:11px" data-resolve="'+r.id+'">done</button></td>'];
+    }))
+   + '<p class="note"><b>This is the only sensor that sees urban flooding.</b> '
+   + 'Radar cannot see water between buildings, which is why the 2019 Patna '
+   + 'disaster is missing from our own flood map. A person outside their door can.</p>');
+ },
+ help: function(){
+  if (!L.help.length) return '<div class="sec"><p class="empty">Nobody waiting. '
+    + 'Requests arrive from the citizen app, hardest to move first.</p></div>';
+  var pc={stretcher:"p-boat",cannot_move:"p-boat",needs_help:"p-foot",walking:"p-car"};
+  return sec("Waiting, " + L.help.length, tbl(["Where","Mobility","People"],
+    L.help.map(function(h){
+      return ["<td>"+esc(h.place||"unknown")+"</td>",
+              '<td><span class="pill '+(pc[h.mobility]||"p-foot")+'">'
+                + esc(h.mobility||"?")+"</span></td>",
+              '<td class="n">'+n(h.people)+"</td>"];
+    }))
+   + '<p class="note">Ordered by mobility first, then group size, then age. That '
+   + 'ordering is the whole reason this is a separate queue.</p>');
+ },
+ watch: function(){
+  var N = L.national || {}, c = N.counts || {}, rows = N.stations || [];
+  // Every station that is over its own danger mark, worst first. This panel
+  // used to be four counts, which is a summary of a thing nobody could see.
+  // The names and the exceedances are the thing.
+  var over = rows.filter(function(r){ return r.st === 2 && r.o != null && r.d != null; })
+                 .sort(function(a, b){ return (b.o - b.d) - (a.o - a.d); });
+  var warn = rows.filter(function(r){ return r.st === 1; }).length;
+  return sec("CWC network, live", kpi([
+    [n(c.above_danger),"above danger","bad"], [n(c.above_warning),"above warning","warn"],
+    [n(c.normal),"normal","ok"], [n(c.not_reporting),"not reporting","sil"]
+  ]) + '<p class="note">The silent gauges are drawn in a colour that reads as '
+     + '<b>absence</b>, never as safety. A dashboard that drops them tells you '
+     + n(c.total) + ' stations are fine when only ' + n(c.normal) + ' said so.</p>')
+  + (over.length ? sec("Above danger right now, worst first",
+      tbl(["Station","Level","Danger","Over","Read"], over.map(function(r){
+        return ["<td>"+esc(r.n)+"</td>",
+                '<td class="n">'+r.o.toFixed(2)+"</td>",
+                '<td class="n" style="color:var(--faint)">'+Number(r.d).toFixed(2)+"</td>",
+                '<td class="n" style="color:var(--bad)">+'+(r.o-r.d).toFixed(2)+"</td>",
+                '<td class="n" style="color:var(--faint)">'
+                  + esc(String(r.t || "").slice(11, 16)) + "</td>"];
+      }))
+      + '<p class="note">Each of these is one station’s own official danger '
+      + 'mark, not a national threshold, and the time is when that station last '
+      + 'reported. Nothing here is modelled.</p>')
+    : '<div class="sec"><p class="empty">No station is above its danger level '
+      + 'right now. ' + n(warn) + ' are above warning.</p></div>')
+  + sec("Also live", tbl(null, [
+      ["<td>NDMA SACHET water alerts</td>", '<td class="n">'+n(N.alerts)+"</td>"],
+      ["<td>Snapshot taken</td>", '<td class="n">'+esc(N.built || "−")+"</td>"]
+    ]) + '<p class="note">The snapshot refreshes itself in the background and is '
+       + 'refused past six hours. It used to be whatever was last built by hand, '
+       + 'and on the day that was found it was five days old and said this river '
+       + 'was below its danger level while it had been above it for three.</p>');
+ },
+ log: function(){
+  if (!L.decisions.length) return '<div class="sec"><p class="empty">No decisions '
+    + 'logged yet. Approve or override on the Act tab and it lands here.</p></div>';
+  return sec("Decisions", tbl(["Who","What",""], L.decisions.map(function(d){
+    return ["<td>"+esc(d.officer||"officer")+'<span class="sub">'+esc(d.action)+"</span></td>",
+            '<td><span class="pill '+(d.decision==="overridden"?"p-boat":"p-car")+'">'
+              + esc(d.decision)+"</span>"
+              + (d.reason ? '<span class="sub">'+esc(d.reason)+"</span>" : "") + "</td>",
+            '<td class="n">'+esc(String(d.at||"").slice(11,16))+"</td>"];
+  })) + '<p class="note">Who, when, and the reason code. It survives a closed '
+      + 'browser because it is a database row, not page state.</p>');
+ }
+};
+var HEADS = {
+  plan:["Situation","What is happening here, right now?"],
+  when:["Road timeline","How long do the roads last?"],
+  where:["Shelters","Who goes where, and does it fit?"],
+  act:["Act","What am I authorised to do?"],
+  reports:["Citizen reports","What are people telling us?"],
+  help:["Help queue","Who cannot leave on their own?"],
+  watch:["India watch","Is anything happening anywhere?"],
+  log:["Audit log","Who decided what, and why?"]
+};
+function sec(h, inner){ return '<div class="sec"><h4>'+h+"</h4>"+inner+"</div>"; }
+/** The next fortnight of probability, so 100% reads as a curve and not a stuck
+    needle. A single number tells you nothing about whether it is moving. */
+function spark(daily, f){
+  if (!daily || daily.length < 2) return "";
+  var W=300, H=44, n=daily.length, worst=-1, wv=-1;
+  var pts = daily.map(function(d,i){
+    if (d.p > wv){ wv=d.p; worst=i; }
+    return [8 + i*(W-16)/(n-1), H-8 - d.p*(H-16)];
+  });
+  var path = pts.map(function(p,i){ return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1); }).join("");
+  var thr = (f.actions||[]).filter(function(a){return a.threshold<=1;}).pop();
+  var ty = thr ? H-8 - thr.threshold*(H-16) : null;
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:'+H+'px;margin-top:8px" '
+    + 'role="img" aria-label="daily probability">'
+    + (ty!==null ? '<line x1="8" x2="'+(W-8)+'" y1="'+ty.toFixed(1)+'" y2="'+ty.toFixed(1)
+        + '" stroke="#f85149" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>' : "")
+    + '<path d="'+path+'" fill="none" stroke="#1f6feb" stroke-width="1.6"/>'
+    + '<circle cx="'+pts[worst][0].toFixed(1)+'" cy="'+pts[worst][1].toFixed(1)
+    + '" r="3" fill="#1f6feb"/>'
+    + '<text x="8" y="'+(H-1)+'" fill="#5b6875" font-size="9">'+esc(daily[0].day)+'</text>'
+    + '<text x="'+(W-8)+'" y="'+(H-1)+'" fill="#5b6875" font-size="9" text-anchor="end">'
+    + esc(daily[n-1].day)+'</text>'
+    + (thr ? '<text x="'+(W-8)+'" y="'+(ty-3).toFixed(1)+'" fill="#f85149" font-size="9" '
+        + 'text-anchor="end">evacuation threshold</text>' : "")
+    + '</svg>';
+}
+function kpi(items){
+  return '<div class="kpi">'+items.map(function(i){
+    return '<div class="'+(i[2]||"")+'"><b>'+i[0]+"</b><span>"+i[1]+"</span></div>";
+  }).join("")+"</div>";
+}
+function tbl(head, rows){
+  return '<table>'+(head?"<thead><tr>"+head.map(function(h,i){
+      return '<th'+(i?' class="n"':'')+">"+h+"</th>"; }).join("")+"</tr></thead>":"")
+   + "<tbody>"+rows.map(function(r){ return "<tr>"+r.join("")+"</tr>"; }).join("")
+   + "</tbody></table>";
+}
+function render(){
+  var h = HEADS[view_] || HEADS.plan, body;
+  // A view that throws used to leave the PREVIOUS panel on screen under the new
+  // heading, which reads as "this district has Patna's numbers". Say it broke.
+  try { body = VIEWS[view_](); }
+  catch (e) {
+    body = '<div class="sec"><p class="empty">This panel failed to render: '
+         + esc(e.message) + '. Nothing here is being shown from another district.'
+         + '</p></div>';
+  }
+  var html = '<div class="rhead"><div class="k">'+h[0]+'</div><div class="q">'
+           + h[1]+"</div></div>" + body;
+  // Only touch the DOM when something actually changed. Rebuilding the panel on
+  // every four-second poll threw away the scroll position and killed a button
+  // under the officer's finger, which in a control room is worse than stale.
+  var rail = document.getElementById("rail");
+  if (rail._html === html) return;
+  rail._html = html;
+  rail.innerHTML = html;
+}
+function setView(v){
+  view_ = v;
+  // Reading the national panel while the map shows one district is the kind of
+  // mismatch that gets a wrong number quoted in a meeting.
+  setMapMode(v === "watch" ? "national" : "district");
+  [].forEach.call(document.querySelectorAll(".nav"), function(x){
+    x.setAttribute("aria-current", x.dataset.v===v ? "true":"false"); });
+  render();
+}
+[].forEach.call(document.querySelectorAll(".nav"), function(b){
+  b.onclick=function(){ setView(b.dataset.v); };
+});
+
+/* ---- writes: resolve a report, log a decision ---- */
+function postForm(path, fields){
+  var fd=new FormData();
+  Object.keys(fields).forEach(function(k){
+    if (fields[k]!==undefined && fields[k]!==null && fields[k]!=="") fd.append(k, fields[k]);
+  });
+  return fetch(API+path, {method:"POST", body:fd}).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(r.status+" "+t); });
+    return r.json();
+  });
+}
+function officer(){ return "DM " + (TITLES[EV]||EV).replace(" district",""); }
+document.getElementById("rail").addEventListener("click", function(ev){
+  var rid = ev.target.getAttribute && ev.target.getAttribute("data-resolve");
+  if (rid){
+    ev.target.disabled = true;
+    postForm("/api/reports/"+rid+"/resolve", {by:"control room"})
+      .then(poll).catch(function(e){ alert("Could not resolve: "+e.message); });
+    return;
+  }
+  var act = ev.target.getAttribute && ev.target.getAttribute("data-act");
+  if (act === "approve"){
+    var f=L.forecast||{}, go=(f.actions||[]).filter(function(a){return a.authorised;});
+    if (!go.length){ alert("Nothing is authorised at this probability."); return; }
+    postForm("/api/decisions", {event:EV,
+      action:go.map(function(a){return a.name;}).join(", "),
+      decision:"approved", probability:f.probability,
+      threshold:go[go.length-1].threshold, officer:officer()})
+      .then(function(){ setView("log"); poll(); })
+      .catch(function(e){ alert("Not logged: "+e.message); });
+  }
+  if (act === "override"){
+    var d=document.getElementById("dlg");
+    document.getElementById("dlgh").textContent = "Override the recommendation";
+    document.getElementById("dlgp").textContent =
+      "The backend refuses an override with no reason code. That is deliberate: an "
+      + "unexplained override in an audit log is worthless.";
+    document.getElementById("dlgbody").innerHTML =
+      '<select id="rsn"><option value="1">resources unavailable</option>'
+      + '<option value="2">local information contradicts the forecast</option>'
+      + '<option value="3">already actioned by another agency</option></select>';
+    d.showModal();
+    d.onclose = function(){
+      if (d.returnValue !== "ok") return;
+      postForm("/api/decisions", {event:EV, action:"Full evacuation",
+        decision:"overridden", reason:document.getElementById("rsn").value,
+        officer:officer()}).then(function(){ setView("log"); poll(); })
+        .catch(function(e){ alert("Not logged: "+e.message); });
+    };
+  }
+});
+
+/* ---- switching district ---- */
+function loadEvent(name){
+  EV = name;
+  M = D.events[name];
+  lastReportIds = new Set();
+  var s = D.seed[name] || {};
+  L.plan = s.plan; L.units = s.units; L.shelters = s.shelters;
+  L.forecast = s.forecast; L.shelterList = null; L.river = null;
+  L.reports = []; L.help = []; L.decisions = [];
+
+  var c = CHIP[name] || [name, "", "", "calm"];
+  document.getElementById("stateriver").textContent = c[0];
+  document.getElementById("statedanger").textContent = "asking the gauge";
+  document.getElementById("statelvl").textContent = "…";
+  document.getElementById("statechip").className = "chip calm";
+
+  if (!M){
+    document.getElementById("statelvl").textContent = "no map";
+    return;
+  }
+  // Precompute each feature's cell in this district's grid once, so the draw
+  // loop never does the arithmetic 12,000 times a frame.
+  initGrid();
+  M.edges.forEach(function(e){ if (e.length<5){
+    var m=e[0][Math.floor(e[0].length/2)]; e[4]=gidx(m[0],m[1]); } });
+  M.people.forEach(function(p){ if (p.length<7) p[6]=gidx(p[0],p[1]); });
+
+  // Switching district while the national map is up must not drag the map back
+  // to a district: the panel beside it would still be India's and the two would
+  // disagree about what is on screen.
+  var national = mapMode === "national";
+  var many = M.hours.length > 1;
+  document.getElementById("timebar").hidden = national || !many;
+  document.getElementById("snapbar").hidden = national || many;
+  document.querySelector(".maptop").style.display = national ? "none" : "";
+  document.querySelector(".legend").style.display = national ? "none" : "";
+  if (many){
+    slider.max = M.hours.length-1;
+    slider.value = (M.mode==="level") ? Math.round(M.hours.length*0.6) : M.hours.length-1;
+    tmode.innerHTML = (M.mode==="level")
+      ? '<b>Fitted level.</b> Terrain below the water level, calibrated against '
+        + 'the observed satellite extent. Continuous in time.'
+      : '<b>Published depth.</b> C-Flood frames three hours apart, drawn as '
+        + 'issued. Nothing between two frames is interpolated.';
+    setT(+slider.value);
+  } else {
+    frame = 0; setFrameBytes();
+    document.getElementById("snapbar").innerHTML =
+      "<b>One observed snapshot, " + esc(M.hours[0]) + ".</b> This district has no "
+      + "time dimension: the level that reproduces the observed extent does not "
+      + "exist here, and the page will not animate a number nobody measured.";
+  }
+  if (!national) fitAOI();
+  queue(); render(); poll();
+}
+
+var sel=document.getElementById("ev");
+Object.keys(D.events).forEach(function(e){
+  var o=document.createElement("option"); o.value=e;
+  o.textContent = TITLES[e] || e;
+  sel.appendChild(o);
+});
+sel.value = EV;
+sel.onchange = function(){ loadEvent(sel.value); };
+
+window.addEventListener("resize", function(){ fit(); queue(); });
+fit();
+// A deep link, so the page can be opened straight on a panel:
+//   ?event=mahanadi&view=watch
+// Written for capturing screenshots without a human clicking, and it turns out
+// to be what you want in a control room too: a link to the thing, not to the
+// front page and then four instructions.
+var Q = new URLSearchParams(location.search);
+if (Q.get("event") && D.events[Q.get("event")]) EV = Q.get("event");
+loadEvent(EV);
+if (Q.get("view") && VIEWS[Q.get("view")]) setView(Q.get("view"));
+setInterval(poll, 4000);
+})();
+</script>
+</body>
+</html>

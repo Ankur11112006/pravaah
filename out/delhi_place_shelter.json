@@ -1,0 +1,67 @@
+{
+ "Alipur": {
+  "shelter": "Swami Shraddhanand College",
+  "people": 5,
+  "shelters_used": 1
+ },
+ "Tronica City": {
+  "shelter": "Salwan Public School",
+  "people": 92,
+  "shelters_used": 1
+ },
+ "Bhenara Khurd": {
+  "shelter": "BHAGWAN DAS SCHOOL",
+  "people": 4,
+  "shelters_used": 1
+ },
+ "Ibrahimpur": {
+  "shelter": "Swami Shraddhanand College",
+  "people": 75,
+  "shelters_used": 3
+ },
+ "Swaroop Nagar": {
+  "shelter": "Mata Sukhdevi Public School",
+  "people": 4,
+  "shelters_used": 2
+ },
+ "Jawli": {
+  "shelter": "BHAGWAN DAS SCHOOL",
+  "people": 2,
+  "shelters_used": 1
+ },
+ "Siraspur": {
+  "shelter": "Mata Sukhdevi Public School",
+  "people": 3,
+  "shelters_used": 1
+ },
+ "Libaspur": {
+  "shelter": "Mata Sukhdevi Public School",
+  "people": 8,
+  "shelters_used": 1
+ },
+ "Rameshwar Park": {
+  "shelter": "Salwan Public School",
+  "people": 12,
+  "shelters_used": 1
+ },
+ "Wazirabad": {
+  "shelter": "Swami Shraddhanand College",
+  "people": 29,
+  "shelters_used": 2
+ },
+ "Bhalswa": {
+  "shelter": "Rav Mehar Chand Saraswati Vidya Mandir",
+  "people": 57,
+  "shelters_used": 4
+ },
+ "Jahangir Puri": {
+  "shelter": "community_centre at 28.7403N 77.1655E",
+  "people": 68,
+  "shelters_used": 2
+ },
+ "Sanjay Gandhi Transport Nagar": {
+  "shelter": "Gyan Sarovar School",
+  "people": 2,
+  "shelters_used": 1
+ }
+}

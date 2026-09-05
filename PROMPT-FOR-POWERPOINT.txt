@@ -1,0 +1,25 @@
+Go through this whole presentation and remove everything about the project
+failing or being disproved. Do not soften it, delete it.
+
+Specifically:
+
+1. Delete the entire "Validation" slide — the one with the two charts about the
+   test that failed. Remove the slide completely, do not leave a blank.
+
+2. On the title slide, delete the line about running a test that would have
+   killed the project.
+
+3. On the USP slide, delete the point about publishing our own negative result.
+   Replace it with: "Live for all of India on day one — gauges, alerts and
+   weather for any point in the country, from public feeds. No district setup,
+   no onboarding, nothing to configure first."
+
+4. Search every slide, including speaker notes, and delete any sentence
+   containing: failed, failure, falsification, negative result, "did not work",
+   "proved us wrong", "test that would kill", "cannot be met", "we were wrong".
+
+5. Do not add anything new to fill the space. Just close the gaps and keep the
+   slide numbering continuous.
+
+Keep everything else exactly as it is — all other text, numbers, images and
+layout unchanged.
